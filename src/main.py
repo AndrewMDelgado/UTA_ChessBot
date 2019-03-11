@@ -1,11 +1,16 @@
 from Board import Board
 from InputParser import InputParser
 from AI import AI
+from GamePrep import GamePrep
 import sys
 import random
 
 WHITE = True
 BLACK = False
+
+gamePrep = GamePrep()
+showBoard, twoPlayer, quickStart, \
+     variantGame, customGame = gamePrep.processTags(sys.argv)
 
 
 def askForPlayerSide():
@@ -29,17 +34,18 @@ def askForDepthOfAI():
         sys.exit()
     except:
         print("Invalid input, defaulting to 2")
-    return depthInput
+    return abs(depthInput)
 
 
 def printCommandOptions():
     undoOption = 'u : undo last move'
     printLegalMovesOption = 'l : show all legal moves'
     randomMoveOption = 'r : make a random move'
+    printBoardOption = 'p : print the board'
     quitOption = 'quit : resign'
     moveOption = 'a3, Nc3, Qxa2, etc : make the move'
     options = [undoOption, printLegalMovesOption, randomMoveOption,
-               quitOption, moveOption, '', ]
+               printBoardOption, quitOption, moveOption, '', ]
     print('\n'.join(options))
 
 
@@ -59,17 +65,102 @@ def makeMove(move, board):
     print("Making move : " + move.notation)
     board.makeMove(move)
 
+def makeMoveReadable(move, board, aiMove):
+    if aiMove:
+        print("AI : " + str(move))
+    board.makeMove(move)
 
 def printPointAdvantage(board):
     print("Currently, the point difference is : " +
           str(board.getPointAdvantageOfSide(board.currentSide)))
 
+def saveGame(board):
+    filename = input("Enter filename (.csg will be appended): ")
+    filename = "../Saves/" + filename + ".csg"
+    realName = gamePrep.saveGame(board, filename)
+    print("Board state saved as " + realName)
 
 def undoLastTwoMoves(board):
     if len(board.history) >= 2:
         board.undoLastMove()
         board.undoLastMove()
 
+
+def minUIGame(board, playerSide, ai):
+    parserWhite = InputParser(board, WHITE)
+    parserBlack = InputParser(board, BLACK)
+    parser = parserWhite
+    PvP = not ai
+    
+    while True:
+        if showBoard:
+            print()
+            print(board)
+            print()
+        if board.isCheckmate():
+            if PvP:
+                if board.currentSide == WHITE: #white has no legal moves
+                    winner = 'Black'
+                else:
+                    winner = 'White'
+                print("Checkmate! %s wins!" % winner)
+            elif board.currentSide == playerSide:
+                print("Checkmate, you lost")
+            else:
+                print("Checkmate! You won!")
+            return
+
+        if board.isStalemate():
+            print("Stalemate")
+            return
+
+        if PvP or board.currentSide == playerSide:
+            # printPointAdvantage(board)
+            if board.currentSide == WHITE:
+                parser = parserWhite
+                plRep = 'Wh'
+            else:
+                parser = parserBlack
+                plRep = 'Bl'
+            if not PvP:
+                plRep = 'Pl'
+
+            move = None
+            command = input(plRep + " : ")
+            if command.lower() == 'u':
+                undoLastTwoMoves(board)
+                continue
+            elif command.lower() == '?':
+                printCommandOptions()
+                continue
+            elif command.lower() == 'l':
+                printAllLegalMoves(board, parser)
+                continue
+            elif command.lower() == 'r':
+                move = getRandomMove(board, parser)
+            elif command.lower() == 'p':
+                print()
+                print(board)
+                print()
+                continue
+            elif command.lower() == 's' or command.lower() == 'save':
+                saveGame(board)
+                continue
+            elif command.lower() == 'exit' or command.lower() == 'quit' \
+                or command.lower() == 'q':
+                return
+            try:
+                move = parser.convertInput(command)
+            except ValueError as error:
+                print("%s" % error)
+                continue
+            makeMoveReadable(move, board, False)
+
+        else:
+            #print("AI thinking...")
+            move = ai.getBestMove()
+            move.notation = parser.notationForMove(move)
+            makeMoveReadable(move, board, True)
 
 def startGame(board, playerSide, ai):
     parser = InputParser(board, playerSide)
@@ -165,17 +256,28 @@ def twoPlayerGame(board):
             continue
         makeMove(move, board)
 
-
-board = Board()
+if customGame:
+    board = customGame
+else:
+    mateInOne = (variantGame == 'mate')
+    castleBoard = (variantGame == 'castle')
+    passant = (variantGame == 'passant')
+    promotion = (variantGame == 'promotion')
+    board = Board(mateInOne, castleBoard, passant, promotion)
 
 try:
-    if len(sys.argv) >= 2 and sys.argv[1] == "--two":
-        twoPlayerGame(board)
+    playerSide = None
+    aiDepth = None
+    if quickStart:
+        playerSide = quickStart[0]
+        aiDepth = quickStart[1]
     else:
         playerSide = askForPlayerSide()
         print()
         aiDepth = askForDepthOfAI()
+    opponentAI = None
+    if not twoPlayer:
         opponentAI = AI(board, not playerSide, aiDepth)
-        startGame(board, playerSide, opponentAI)
+    minUIGame(board, playerSide, opponentAI)
 except KeyboardInterrupt:
     sys.exit()

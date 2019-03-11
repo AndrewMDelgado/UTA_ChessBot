@@ -16,6 +16,26 @@ class InputParser:
         if regexAlgebraicNotation.match(humanInput):
             return self.moveForShortAlgebraicNotation(humanInput)
         raise ValueError("Invalid move: %s" % humanInput)
+    
+    def convertInput(self, humanInput):
+        if humanInput in ['O-O', 'O-O-O']:
+            return self.parse(humanInput)
+        
+        if len(humanInput) == 6:
+            promote = (humanInput[4] == '=') \
+                and (humanInput[5].lower() in ['r', 'n', 'b', 'q'])
+            if not promote:
+                print('d\'oh')
+                raise ValueError("Invalid move: %s" %humanInput)
+            
+            rank_i = humanInput[0]
+            rank_f = humanInput[2]
+            if rank_i == rank_f:    #pawn moves forward to be promoted
+                humanInput = humanInput[2:]
+            else:    #pawn takes piece to be promoted
+                humanInput = rank_i + 'x' + humanInput[2:]
+
+        return self.parse(humanInput)
 
     def moveForCoordinateNotation(self, notation):
         for move in self.board.getAllMovesLegal(self.side):

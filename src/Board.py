@@ -46,12 +46,34 @@ class Board:
                                 Knight(self, WHITE, C(6, 0)),
                                 Rook(self, WHITE, C(7, 0))])
 
+        elif mateInOne:
+            kingW = King(self, WHITE, C(4, 0))
+            kingB = King(self, BLACK, C(4, 7))
+            rook1 = Rook(self, WHITE, C(3, 0))
+            rook2 = Rook(self, WHITE, C(5, 0))
+            queen = Queen(self, WHITE, C(7, 1))
+            self.pieces.extend([kingW, kingB, rook1, rook2, queen])
+
+        elif castleBoard:
+            kingW = King(self, WHITE, C(4, 0))
+            kingB = King(self, BLACK, C(4, 7))
+            rook1 = Rook(self, WHITE, C(0, 0))
+            rook2 = Rook(self, WHITE, C(7, 0))
+            pawn1 = Pawn(self, WHITE, C(1, 3))
+            pawn2 = Pawn(self, WHITE, C(2, 1))
+            bshp  = Bishop(self, WHITE, C(3, 3))
+            queen = Queen(self, BLACK, C(2, 4))
+            self.pieces.extend([kingW, kingB, rook1, rook2, pawn1, pawn2, bshp, queen])
+        
         elif promotion:
-            pawnToPromote = Pawn(self, WHITE, C(1, 6))
-            pawnToPromote.movesMade = 1
+            pawn1 = Pawn(self, WHITE, C(1, 6))
+            pawn1.movesMade = 1
+            pawn2 = Pawn(self, WHITE, C(2, 6))
+            pawn3 = Pawn(self, WHITE, C(3, 5))
+            pawnB = Pawn(self, BLACK, C(2, 7))
             kingWhite = King(self, WHITE, C(4, 0))
             kingBlack = King(self, BLACK, C(3, 2))
-            self.pieces.extend([pawnToPromote, kingWhite, kingBlack])
+            self.pieces.extend([pawn1, pawn2, pawn3, pawnB, kingWhite, kingBlack])
 
         elif passant:
             pawn = Pawn(self, WHITE, C(1, 4))
@@ -71,6 +93,7 @@ class Board:
 
     def __str__(self):
         return self.wrapStringRep(self.makeStringRep(self.pieces))
+        #return self.wrapStringRep(self.makeUnicodeStringRep(self.pieces))
 
     def undoLastMove(self):
         lastMove, pieceTaken = self.history.pop()
@@ -183,7 +206,10 @@ class Board:
                     color = 'blue' if side == WHITE else 'red'
                     pieceRep = colored(piece.stringRep, color)
                 else:
-                    pieceRep = ' '
+                    if (x + y) % 2 == 0:
+                        pieceRep = 'X'
+                    else:
+                        pieceRep = ' '
                 stringRep += pieceRep + ' '
             stringRep += '\n'
         return stringRep.rstrip()
@@ -211,8 +237,14 @@ class Board:
                 if piece:
                     side = piece.side
                     color = 'white' if side == WHITE else 'grey'
-                    pieceRep = colored(piece.stringRep + ' ', color=color, on_color=on_color)
-                stringRep += pieceRep
+                    pieceRep = colored(
+                        DISPLAY_LOOKUP[piece.stringRep] + ' ', color=color, on_color=on_color)
+                else:
+                    if (x + y) % 2 == 0:
+                        pieceRep = 'X'
+                    else:
+                        pieceRep = ' '
+                stringRep += pieceRep + ' '
             stringRep += '\n'
         return stringRep.rstrip()
 

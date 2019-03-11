@@ -19,7 +19,7 @@ class Move:
         # For castling
         self.rookMove = None
 
-    def __str__(self):
+    def old_str(self):
         displayString = 'Old pos : ' + str(self.oldPos) + \
                         ' -- New pos : ' + str(self.newPos)
         if self.notation:
@@ -30,6 +30,27 @@ class Move:
                             ' -- Pawn taken : ' + str(self.specialMovePiece)
             displayString += ' PASSANT'
         return displayString
+    
+    def __str__(self):
+        def rankOfPos(pos):
+            return str(pos[1] + 1)
+
+        def fileOfPos(pos):
+            transTable = str.maketrans('01234567', 'abcdefgh')
+            return str(pos[0]).translate(transTable)
+        
+        if self.kingsideCastle or self.queensideCastle:
+            return str(self.notation)
+        
+        displayString = fileOfPos(self.oldPos) + rankOfPos(self.oldPos)
+        displayString += fileOfPos(self.newPos) + rankOfPos(self.newPos)
+        if self.passant:
+            displayString += 'EP'
+        elif self.promotion:
+            displayString += '=' + self.specialMovePiece.stringRep
+        
+        return displayString
+
 
     def __eq__(self, other):
         if self.oldPos == other.oldPos and \
