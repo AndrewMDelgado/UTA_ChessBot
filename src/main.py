@@ -2,6 +2,7 @@ from Board import Board
 from InputParser import InputParser
 from AI import AI
 from GamePrep import GamePrep
+from PhysIO import PhysInput
 import sys
 import random
 
@@ -9,7 +10,7 @@ WHITE = True
 BLACK = False
 
 gamePrep = GamePrep()
-showBoard, twoPlayer, quickStart, \
+showBoard, twoPlayer, readBoard, quickStart, \
      variantGame, customGame = gamePrep.processTags(sys.argv)
 
 
@@ -90,6 +91,9 @@ def minUIGame(board, playerSide, ai):
     parserWhite = InputParser(board, WHITE)
     parserBlack = InputParser(board, BLACK)
     parser = parserWhite
+    physInputWhite = PhysInput(WHITE)
+    physInputBlack = PhysInput(BLACK)
+    physInput = physInputWhite
     PvP = not ai
     
     while True:
@@ -118,15 +122,21 @@ def minUIGame(board, playerSide, ai):
             # printPointAdvantage(board)
             if board.currentSide == WHITE:
                 parser = parserWhite
+                physInput = physInputWhite
                 plRep = 'Wh'
             else:
                 parser = parserBlack
+                physInput = physInputBlack
                 plRep = 'Bl'
             if not PvP:
                 plRep = 'Pl'
 
+            if readBoard:
+                command = physInput.getPlayerMove()
+            else:
+                command = input(plRep + " : ")
+            
             move = None
-            command = input(plRep + " : ")
             if command.lower() == 'u':
                 undoLastTwoMoves(board)
                 continue

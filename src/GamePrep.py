@@ -131,6 +131,7 @@ class GamePrep:
     def processTags(self, argv):
         showBoard  = not "--hb" in argv
         twoPlayer = "--two" in argv
+        readBoard = "--rb" in argv
         
         qsRegEx = re.compile('--qs(w|W|b|B)[1-3]$')
         quickStart = None
@@ -150,5 +151,5 @@ class GamePrep:
             #    filename = input("Enter custom game filename: ")
             #    customGame = self.loadGame(filename)
         
-        return showBoard, twoPlayer, quickStart, variantGame, customGame
+        return showBoard, twoPlayer, readBoard, quickStart, variantGame, customGame
 

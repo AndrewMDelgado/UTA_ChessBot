@@ -18,24 +18,25 @@ class InputParser:
         raise ValueError("Invalid move: %s" % humanInput)
     
     def convertInput(self, humanInput):
-        if humanInput in ['O-O', 'O-O-O']:
-            return self.parse(humanInput)
-        
-        if len(humanInput) == 6:
-            promote = (humanInput[4] == '=') \
-                and (humanInput[5].lower() in ['r', 'n', 'b', 'q'])
-            if not promote:
-                print('d\'oh')
-                raise ValueError("Invalid move: %s" %humanInput)
+        promote = (humanInput[-2] == '=') \
+            and (humanInput[-1].lower() in ['r', 'n', 'b', 'q'])
+        passant = humanInput[-2:] == 'EP'
             
+        if promote:
             rank_i = humanInput[0]
             rank_f = humanInput[2]
             if rank_i == rank_f:    #pawn moves forward to be promoted
                 humanInput = humanInput[2:]
             else:    #pawn takes piece to be promoted
                 humanInput = rank_i + 'x' + humanInput[2:]
+        elif passant:
+            humanInput = humanInput[:-2] #en passants parsed as normal move
 
-        return self.parse(humanInput)
+        parsedMove = self.parse(humanInput)
+        if passant and not parsedMove.passant:  #player wrongly declares en passant
+            raise ValueError("Invalid En Passant: %s" % humanInput)
+
+        return parsedMove
 
     def moveForCoordinateNotation(self, notation):
         for move in self.board.getAllMovesLegal(self.side):
