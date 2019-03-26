@@ -86,7 +86,6 @@ class PhysInput:
             sameRank = (plR == aiR == correctRank)
             adjacent = (abs(fileDiff) == 1)
             correctDest = (destF == aiF and int(destR) == int(aiR) + delta)
-            #TODO: assert plPawn is actually a pawn using VirtualBoard class
             
             if sameRank and adjacent and correctDest:
                 return plPawn + pawnDest

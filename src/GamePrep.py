@@ -132,6 +132,16 @@ class GamePrep:
         showBoard  = not "--hb" in argv
         twoPlayer = "--two" in argv
         readBoard = "--rb" in argv
+
+        if "--help" in argv:
+            print("Tags:")
+            print("--hb  Hide board: Opt out of automatically displaying the board afer each move.")
+            print("--two Two-player: Play game with two human players rather than the AI.")
+            print("--rb  Read board: Player input solely from moves on the physical board.")
+            print("--vg  Variant game: Test move functionality with preset board states," \
+                " or load a saved game state (load games not yet implemented).\n")
+            if len(argv) == 2:  #--help is the only tag
+                exit(0)
         
         qsRegEx = re.compile('--qs(w|W|b|B)[1-3]$')
         quickStart = None
