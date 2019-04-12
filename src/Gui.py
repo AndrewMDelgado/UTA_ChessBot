@@ -8,16 +8,19 @@ WHITE = True
 BLACK = False
 
 
-class GUI():
+class GUI:
 
     def dispAIMove(self, moveStr):
-        msg = moveStr[:2] + ' to ' + moveStr[2:]
+        msg = moveStr[5:7] + ' to ' + moveStr[7:]
         msgbox.showinfo("AI Move", msg)
 
     def getPlayerMove(self):
         window = Tk()
         window.wm_title("Player Move")
         window.mainloop()
+    
+    def showinfo(self, title, msg):
+        msgbox.showinfo(title, msg)
 
 
 def guiMain():

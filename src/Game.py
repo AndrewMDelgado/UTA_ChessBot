@@ -3,11 +3,9 @@ from InputParser import InputParser
 from AI import AI
 from GamePrep import GamePrep
 from PhysIO import PhysInput
+from Gui import GUI
 import sys
 import random
-
-WHITE = True
-BLACK = False
 
 gamePrep = GamePrep()
 showBoard, twoPlayer, readBoard, quickStart, \
@@ -15,6 +13,8 @@ showBoard, twoPlayer, readBoard, quickStart, \
 
 
 def askForPlayerSide():
+    WHITE = True
+    BLACK = False
     playerChoiceInput = input(
         "What side would you like to play as [wB]? ").lower()
     if 'w' in playerChoiceInput:
@@ -66,9 +66,9 @@ def makeMove(move, board):
     print("Making move : " + move.notation)
     board.makeMove(move)
 
-def makeMoveReadable(move, board, aiMove):
+def makeMoveReadable(move, board, aiMove, chessGUI=None):
     if aiMove:
-        print("AI : " + str(move))
+        display("AI : " + str(move), chessGUI, aiMove=True)
     board.makeMove(move)
 
 def printPointAdvantage(board):
@@ -86,8 +86,19 @@ def undoLastTwoMoves(board):
         board.undoLastMove()
         board.undoLastMove()
 
+def display(msg, chessGUI, aiMove=False, title="Alert"):
+    if not chessGUI:
+        print(msg)
+    elif aiMove:
+        chessGUI.dispAIMove(msg)
+    else:
+        chessGUI.showinfo(title, msg)
+
 
 def minUIGame(board, playerSide, ai):
+    WHITE = True
+    BLACK = False
+    
     parserWhite = InputParser(board, WHITE)
     parserBlack = InputParser(board, BLACK)
     parser = parserWhite
@@ -95,27 +106,31 @@ def minUIGame(board, playerSide, ai):
     physInputBlack = PhysInput(BLACK)
     physInput = physInputWhite
     PvP = not ai
+    chessGUI = None
+    if __name__ != '__main__':
+        chessGUI = GUI()
     
     while True:
-        if showBoard:
-            print()
-            print(board)
-            print()
+        if not chessGUI:
+            if showBoard:
+                print()
+                print(board)
+                print()
         if board.isCheckmate():
             if PvP:
                 if board.currentSide == WHITE: #white has no legal moves
                     winner = 'Black'
                 else:
                     winner = 'White'
-                print("Checkmate! %s wins!" % winner)
+                display("Checkmate! {} wins!".format(winner), chessGUI, title="Game Over")
             elif board.currentSide == playerSide:
-                print("Checkmate, you lost")
+                display("Checkmate, you lost", chessGUI, title="Game Over")
             else:
-                print("Checkmate! You won!")
+                display("Checkmate! You won!", chessGUI, title="Game Over")
             return
 
         if board.isStalemate():
-            print("Stalemate")
+            display("Stalemate", chessGUI, title="Game Over")
             return
 
         if PvP or board.currentSide == playerSide:
@@ -131,7 +146,7 @@ def minUIGame(board, playerSide, ai):
             if not PvP:
                 plRep = 'Pl'
 
-            if readBoard:
+            if chessGUI:
                 command = physInput.getPlayerMove()
             else:
                 command = input(plRep + " : ")
@@ -162,7 +177,7 @@ def minUIGame(board, playerSide, ai):
             try:
                 move = parser.convertInput(command)
             except ValueError as error:
-                print("%s" % error)
+                display("{}".format(error), chessGUI, title="Error")
                 continue
             makeMoveReadable(move, board, False)
 
@@ -170,7 +185,7 @@ def minUIGame(board, playerSide, ai):
             #print("AI thinking...")
             move = ai.getBestMove()
             move.notation = parser.notationForMove(move)
-            makeMoveReadable(move, board, True)
+            makeMoveReadable(move, board, True, chessGUI)
 
 def startGame(board, playerSide, ai):
     parser = InputParser(board, playerSide)
@@ -224,8 +239,11 @@ def startGame(board, playerSide, ai):
             makeMove(move, board)
 
 def twoPlayerGame(board):
+    WHITE = True
+    BLACK = False
     parserWhite = InputParser(board, WHITE)
     parserBlack = InputParser(board, BLACK)
+    
     while True:
         print()
         print(board)
@@ -266,28 +284,29 @@ def twoPlayerGame(board):
             continue
         makeMove(move, board)
 
-if customGame:
-    board = customGame
-else:
-    mateInOne = (variantGame == 'mate')
-    castleBoard = (variantGame == 'castle')
-    passant = (variantGame == 'passant')
-    promotion = (variantGame == 'promotion')
-    board = Board(mateInOne, castleBoard, passant, promotion)
-
-try:
-    playerSide = None
-    aiDepth = None
-    if quickStart:
-        playerSide = quickStart[0]
-        aiDepth = quickStart[1]
+if __name__ == '__main__':
+    if customGame:
+        board = customGame
     else:
-        playerSide = askForPlayerSide()
-        print()
-        aiDepth = askForDepthOfAI()
-    opponentAI = None
-    if not twoPlayer:
-        opponentAI = AI(board, not playerSide, aiDepth)
-    minUIGame(board, playerSide, opponentAI)
-except KeyboardInterrupt:
-    sys.exit()
+        mateInOne = (variantGame == 'mate')
+        castleBoard = (variantGame == 'castle')
+        passant = (variantGame == 'passant')
+        promotion = (variantGame == 'promotion')
+        board = Board(mateInOne, castleBoard, passant, promotion)
+
+    try:
+        playerSide = None
+        aiDepth = None
+        if quickStart:
+            playerSide = quickStart[0]
+            aiDepth = quickStart[1]
+        else:
+            playerSide = askForPlayerSide()
+            print()
+            aiDepth = askForDepthOfAI()
+        opponentAI = None
+        if not twoPlayer:
+            opponentAI = AI(board, not playerSide, aiDepth)
+        minUIGame(board, playerSide, opponentAI)
+    except KeyboardInterrupt:
+        sys.exit()
