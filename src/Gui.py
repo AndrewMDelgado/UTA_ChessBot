@@ -127,4 +127,3 @@ def guiStart():
 
 if __name__ == '__main__':
     guiStart()
-    
