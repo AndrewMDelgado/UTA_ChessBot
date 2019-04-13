@@ -88,7 +88,7 @@ class PhysInput:
             correctDest = (destF == aiF and int(destR) == int(aiR) + delta)
             
             if sameRank and adjacent and correctDest:
-                return plPawn + pawnDest
+                return plPawn + pawnDest + 'EP'
             else:
                 return 'invalid EP'
     

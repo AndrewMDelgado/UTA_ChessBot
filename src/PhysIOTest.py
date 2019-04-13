@@ -43,7 +43,7 @@ plMoveSetB = [
 def testPhysIn(physIn, moveSet):
     passed = True
     for pair in moveSet:
-        fname = moveDir + pair[0]
+        fname = moveDir + 'test/' + pair[0]
         expected  = pair[1]
         physIn.filename = fname
         actual = physIn.getPlayerMove()
