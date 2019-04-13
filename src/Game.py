@@ -3,7 +3,7 @@ from InputParser import InputParser
 from AI import AI
 from GamePrep import GamePrep
 from PhysIO import PhysInput
-from Gui import GUI
+import Gui
 import sys
 import random
 
@@ -108,7 +108,7 @@ def minUIGame(board, playerSide, ai):
     PvP = not ai
     chessGUI = None
     if __name__ != '__main__':
-        chessGUI = GUI()
+        chessGUI = Gui.GUI()
     
     while True:
         if not chessGUI:
@@ -283,6 +283,13 @@ def twoPlayerGame(board):
             print("%s" % error)
             continue
         makeMove(move, board)
+
+def startFromGui(playerSide, aiDepth):
+    board = Board()
+    opponentAI = None
+    if aiDepth > 0: #0 indicates two-player game
+        opponentAI = AI(board, not playerSide, aiDepth)
+    minUIGame(board, playerSide, opponentAI)
 
 if __name__ == '__main__':
     if customGame:

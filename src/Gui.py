@@ -1,7 +1,6 @@
-#from tkinter import *
-#import tkinter
 from tkinter import Tk, ttk, LEFT, RIGHT, BOTTOM, TOP, BOTH, \
     N, S, E, W, NW, Button, Radiobutton, Label, IntVar, NORMAL, DISABLED
+import Game
 import tkinter.messagebox as msgbox
 
 WHITE = True
@@ -69,7 +68,12 @@ def guiStart():
         aiLabel.config(text=msg)
     
     def startGame():
+        aiDepth = aiLevel.get()
+        playerSide = (plColor.get() == 1) #True corresponds to WHITE
+        if plColor.get() == 3: #Two-player game
+            aiDepth = 0
         
+        Game.startFromGui(playerSide, aiDepth)
         winStart.destroy()
         guiMain()
     
