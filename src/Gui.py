@@ -11,6 +11,7 @@ class GUI:
 
     def dispAIMove(self, moveStr):
         msg = moveStr[5:7] + ' to ' + moveStr[7:]
+        msg += "\nMake your move and press OK."
         msgbox.showinfo("AI Move", msg)
 
     def getPlayerMove(self):
@@ -73,6 +74,8 @@ def guiStart():
         if plColor.get() == 3: #Two-player game
             aiDepth = 0
         
+        if playerSide or (aiDepth == 0): #WHITE; white goes first
+            msgbox.showinfo("First move", "WHITE, make your first move and press OK.")
         Game.startFromGui(playerSide, aiDepth)
         winStart.destroy()
         guiMain()

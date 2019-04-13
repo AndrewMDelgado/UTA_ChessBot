@@ -177,9 +177,14 @@ def minUIGame(board, playerSide, ai):
             try:
                 move = parser.convertInput(command)
             except ValueError as error:
-                display("{}".format(error), chessGUI, title="Error")
+                display("{}\nCorrect your move and press OK.".format(error), chessGUI, title="Error")
                 continue
             makeMoveReadable(move, board, False)
+            if PvP:
+                player = "WHITE"
+                if board.currentSide == BLACK:
+                    player = "BLACK"
+                chessGUI.showinfo("Next move", "{}, make your next move and press OK.".format(player))
 
         else:
             #print("AI thinking...")
