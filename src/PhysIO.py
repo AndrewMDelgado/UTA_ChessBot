@@ -1,6 +1,6 @@
 import os
 
-class PhysInput:
+class PhysInput_deprecated:
 
     class Diff:
 
@@ -124,6 +124,269 @@ class PhysInput:
         else:
             return 'invalid move type ' + moveType #will register as invalid move
         #TODO: Implement pawn promotion
+
+class PhysInput:
+
+    #pieces['kings']   = []
+    #pieces['queens']  = []
+    #pieces['bishops'] = []
+    #pieces['knights'] = []
+    #pieces['rooks']   = []
+    #pieces['pawns']   = []
+    
+    kingIDs   = []
+    queenIDs  = []
+    bishopIDs = []
+    knightIDs = []
+    rookIDs   = []
+    pawnIDs   = []
+
+    pieces = dict.fromkeys(kingIDs, 'K')
+    pieces.update(dict.fromkeys(queenIDs, 'Q'))
+    pieces.update(dict.fromkeys(bishopIDs, 'B'))
+    pieces.update(dict.fromkeys(knightIDs, 'N'))
+    pieces.update(dict.fromkeys(rookIDs, 'R'))
+    pieces.update(dict.fromkeys(pawnIDs, 'P'))
+
+    WHITE = True
+    BLACK = False
+
+    class Diff:
+        def __init__(self, diff):
+            if not self.isValid(diff):
+                return None
+            self.ID = diff[1]
+            self.i  = diff[2]
+            self.f  = diff[3]
+            if self.i == '__':
+                self.i = None
+            if self.f == '__':
+                self.f = None
+        
+        def __str__(self):
+            diffStr = ''
+            if self.taken():
+                diffStr = self.i + ' taken'
+            elif self.newPiece():
+                diffStr = 'New piece at ' + self.f
+            else:
+                diffStr = self.i + ' to ' + self.f
+            return diffStr
+        
+        def isValid(self, diff):
+            if len(diff) != 4:
+                return False
+
+            if diff[0] != 'ID':
+                return False
+            
+            diffID = diff[1]
+            if not diffID.isdigit():
+                return False
+            elif int(diffID) < 0 or int(diffID) > 32:
+                return False
+            
+            init = diff[2]
+            finl = diff[3]
+            if not (len(init) == len(finl) == 2):
+                return False
+            elif not (init[0] in 'ABCDEFGH_' and init[1] in '12345678_'):
+                return False
+            elif not (finl[0] in 'ABCDEFGH_' and finl[0] in '12345678_'):
+                return False
+        
+        def taken(self):
+            return not self.f
+        
+        def newPiece(self):
+            return not self.i
+        
+        def getColor(self):
+            return self.ID < 17
+        
+        def getMoveStr(self):
+            if self.taken() or self.newPiece():
+                return None
+            else:
+                return self.i + self.f
+    
+
+    def __init__(self, playerColor):
+        moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
+        self.filename = moveDir + 'playerMove.txt'
+        self.playerColor = playerColor
+    
+    def promptCamera(self):
+        return 0
+        #TODO: wait for player to finish turn, call camera prog to generate playerMove.txt
+    
+    def regMove(self, diffA, diffB):
+        if not diffB:
+            if diffA.taken():
+                return 'Piece illegally removed: ' + diffA.i
+            else:
+                return diffA.getMoveStr()
+        
+        #diffList has two diffs
+        if diffB.taken():
+            if diffA.f == diffB.i:
+                return diffA.getMoveStr
+        elif diffA.taken():
+            if diffB.f == diffA.i:
+                return diffB.getMoveStr
+        else:
+            return 'Player and opponent pieces moved,\nor taken piece still on board.'
+    
+
+    def castleMove(self, kingDiff, rookDiff):
+        color = kingDiff.getColor()
+        if color == self.WHITE:
+            if str(kingDiff) == 'E1 to G1' and str(rookDiff) == 'H1 to F1':
+                return 'O-O'
+            elif str(kingDiff) == 'E1 to C1' and str(rookDiff) == 'A1 to D1':
+                return 'O-O-O'
+            else:
+                return 'Invalid castle'
+        else:
+            if str(kingDiff) == 'E8 to G8' and str(rookDiff) == 'H8 to F8':
+                return 'O-O'
+            elif str(kingDiff) == 'E8 to C8' and str(rookDiff) == 'A8 to D8':
+                return 'O-O-O'
+            else:
+                return 'Invalid castle'
+
+
+    def passantMove(self, pMoved, pTaken):
+        fileList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+        color = pMoved.getColor()
+        moveRf = '6'
+        takenRi = '5'
+        if color == self.BLACK:
+            moveRf = '3'
+            takenRi = '4'
+        fileDelta = abs(fileList.index(pMoved.i[0]) - fileList.index(pTaken.i[0]))
+
+        if not (pMoved.i[1] == pTaken.i[1] == takenRi):
+            return 'En passant: Invalid initial rank'
+        if pMoved.f[1] != moveRf:
+            return 'En passant: Invalid final rank'
+        if fileDelta > 1:
+            return 'En passant: Invalid initial file'
+        if pMoved.f[0] != pTaken.i[0]:
+            return 'En passant: Invalid final file'
+        return pMoved.getMoveStr + 'EP'
+
+
+    def promotionMove(self, diffList):
+        fileList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+        pawnDiff = None
+        newDiff = None
+        takenDiff = None
+        
+        for diff in diffList:
+            if self.pieces[diff.ID] == 'P':
+                pawnDiff = diff
+            elif diff.newPiece():
+                newDiff = diff
+            else:
+                takenDiff = diff
+
+        if not pawnDiff:
+            moveStr = 'Too many pieces moved:'
+            for diff in diffList:
+                moveStr += '\n' + str(diff)
+            return moveStr
+
+        pawnColor = pawnDiff.getColor()
+        
+        pawnRi = '7'
+        newRf = '8'
+        if pawnColor == self.BLACK:
+            pawnRi = '2'
+            newRf = '1'
+
+        pawnFi = pawnDiff.i[1]
+        newFf = newDiff.f[1]
+        fileDelta = abs(fileList.index(pawnFi) - fileList.index(newFf))
+
+        if pawnDiff.i[0] != pawnRi:
+            return 'Pawn ineligible for promotion.'
+        elif newDiff.f[0] != newRf or fileDelta > 1:
+            return 'Promoted pice at incorrect spot.'
+        
+        if takenDiff:
+            if takenDiff.i != newDiff.f:
+                return 'Piece illegally removed.'
+
+        newPieceType = self.pieces[newDiff.ID]
+        return pawnDiff.i + newDiff.f + '=' + newPieceType
+
+
+    def hasNewPiece(self, diffList):
+        for diff in diffList:
+            if diff.newPiece():
+                return True
+        return False
+
+    def processDiffs(self, diffList):
+        if len(diffList) == 1:
+            return self.regMove(diffList[0], None)
+        
+        diffA = diffList[0]
+        diffB = diffList[1]
+        opposed = (diffA.getColor() != diffB.getColor()) #pieces are opposite colors
+
+        if not opposed:
+            if self.pieces[diffA.ID] == 'K' and self.pieces[diffB.ID] == 'R':
+                return self.castleMove(diffA, diffB)
+            elif self.pieces[diffB.ID] == 'R' and self.pieces[diffB.ID] == 'K':
+                return self.castleMove(diffB, diffA)
+            else:
+                return 'Two pieces of the same color moved.'
+        
+        #pieces are opposite colors
+        if self.hasNewPiece(diffList):
+            return self.promotionMove(diffList)
+        
+        if self.pieces[diffA.ID] == self.pieces[diffB.ID] == 'P':
+            if diffB.taken:
+                if diffB.i != diffA.f:
+                    return self.passantMove(diffA, diffB)            
+            elif diffA.taken:
+                if diffA.i != diffB.f:
+                    return self.passantMove(diffB, diffA)
+
+        return self.regMove(diffA, diffB)
+        
+
+    def getPlayerMove(self):
+        self.promptCamera()
+        plFile = open(self.filename, "r")
+        diffList = []
+        for line in plFile:
+            cleanDiff = line.strip().split()
+            newDiff = self.Diff(cleanDiff)
+            if not newDiff:
+                return 'Invalid input'
+            diffList.append(newDiff)
+        plFile.close()
+
+        moveStr = ''
+        numDiffs = len(diffList)
+        if numDiffs < 1:
+            moveStr = 'No move made'
+        elif numDiffs > 2:
+            if numDiffs == 3 and self.hasNewPiece(diffList):
+                moveStr = self.promotionMove(diffList)
+            else:
+                moveStr = 'Too many pieces moved:'
+                for diff in diffList:
+                    moveStr += '\n' + str(diff)
+        else:
+            moveStr = self.processDiffs(diffList)
+        return moveStr
 
 
 
