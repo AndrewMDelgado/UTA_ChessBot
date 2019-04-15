@@ -4,7 +4,8 @@ import cv2.aruco as aruco
 
 def detectCode():
     
-    image = cv2.imread("start.jpeg")
+    #image = cv2.imread("start.jpeg")
+    image = cv2.imread("previous.png")
     aruco_dict = aruco.Dictionary_get(aruco.DICT_ARUCO_ORIGINAL)
 
     parameters = aruco.DetectorParameters_create()
@@ -39,7 +40,8 @@ for i in range(1,len(corners)):
 '''
 def detectCode2():
     
-    image = cv2.imread("move2.jpeg")
+    #image = cv2.imread("move2.jpeg")
+    image = cv2.imread("current.png")
     aruco_dict = aruco.Dictionary_get(aruco.DICT_ARUCO_ORIGINAL)
 
     parameters = aruco.DetectorParameters_create()
@@ -61,3 +63,4 @@ def detectCode2():
        
 
     return (ids,corners)
+
