@@ -1,4 +1,6 @@
 import os
+from capture import capture, capture2
+from templateMatching import genDiffs
 
 class PhysInput_deprecated:
 
@@ -127,19 +129,13 @@ class PhysInput_deprecated:
 
 class PhysInput:
 
-    #pieces['kings']   = []
-    #pieces['queens']  = []
-    #pieces['bishops'] = []
-    #pieces['knights'] = []
-    #pieces['rooks']   = []
-    #pieces['pawns']   = []
-    
-    kingIDs   = []
-    queenIDs  = []
-    bishopIDs = []
-    knightIDs = []
-    rookIDs   = []
-    pawnIDs   = []
+    kingIDs   = [1, 17]
+    queenIDs  = [2, 18]
+    bishopIDs = [3, 4, 19, 20]
+    knightIDs = [5, 6, 21, 22]
+    rookIDs   = [7, 8, 23, 24]
+    pawnIDs   = [9, 10, 11, 12, 13, 14, 15, 16,
+                25, 26, 27, 28, 29, 30, 31, 32]
 
     pieces = dict.fromkeys(kingIDs, 'K')
     pieces.update(dict.fromkeys(queenIDs, 'Q'))
@@ -153,15 +149,10 @@ class PhysInput:
 
     class Diff:
         def __init__(self, diff):
-            if not self.isValid(diff):
-                return None
-            self.ID = diff[1]
-            self.i  = diff[2]
-            self.f  = diff[3]
-            if self.i == '__':
-                self.i = None
-            if self.f == '__':
-                self.f = None
+            assert self.isValid(diff)
+            self.ID = int(diff[0])
+            self.i  = diff[1]
+            self.f  = diff[2]
         
         def __str__(self):
             diffStr = ''
@@ -174,41 +165,47 @@ class PhysInput:
             return diffStr
         
         def isValid(self, diff):
-            if len(diff) != 4:
+            def isSquare(sq):
+                if len(sq) != 2:
+                    return False
+                elif sq == '__':
+                    return True
+                elif sq[0] in 'ABCDEFGH' and sq[1] in '12345678':
+                    return True
+                else:
+                    return False
+            
+            if len(diff) != 3:
                 return False
 
-            if diff[0] != 'ID':
-                return False
-            
-            diffID = diff[1]
+            diffID = diff[0]
             if not diffID.isdigit():
                 return False
             elif int(diffID) < 0 or int(diffID) > 32:
                 return False
             
-            init = diff[2]
-            finl = diff[3]
-            if not (len(init) == len(finl) == 2):
+            init = diff[1]
+            finl = diff[2]
+            if not (isSquare(init) and isSquare(finl)):
                 return False
-            elif not (init[0] in 'ABCDEFGH_' and init[1] in '12345678_'):
-                return False
-            elif not (finl[0] in 'ABCDEFGH_' and finl[0] in '12345678_'):
-                return False
+            
+            return True
         
         def taken(self):
-            return not self.f
+            return self.f == '__'
         
         def newPiece(self):
-            return not self.i
+            return self.i == '__'
         
         def getColor(self):
             return self.ID < 17
         
         def getMoveStr(self):
-            if self.taken() or self.newPiece():
-                return None
-            else:
-                return self.i + self.f
+            return self.i + self.f
+            #if self.taken() or self.newPiece():
+            #    return None
+            #else:
+            #    return self.i + self.f
     
 
     def __init__(self, playerColor):
@@ -216,8 +213,12 @@ class PhysInput:
         self.filename = moveDir + 'playerMove.txt'
         self.playerColor = playerColor
     
-    def promptCamera(self):
-        return 0
+    def promptCamera(self, capt1):
+        if capt1:
+            capture()
+        else:
+            capture2()
+            genDiffs()
         #TODO: wait for player to finish turn, call camera prog to generate playerMove.txt
     
     def regMove(self, diffA, diffB):
@@ -228,19 +229,19 @@ class PhysInput:
                 return diffA.getMoveStr()
         
         #diffList has two diffs
-        if diffB.taken():
-            if diffA.f == diffB.i:
-                return diffA.getMoveStr
-        elif diffA.taken():
-            if diffB.f == diffA.i:
-                return diffB.getMoveStr
+        if diffB.taken() and diffA.f == diffB.i:
+            return diffA.getMoveStr()
+        elif diffA.taken() and diffB.f == diffA.i:
+            return diffB.getMoveStr()
         else:
             return 'Player and opponent pieces moved,\nor taken piece still on board.'
     
 
     def castleMove(self, kingDiff, rookDiff):
         color = kingDiff.getColor()
-        if color == self.WHITE:
+        if color != self.playerColor:
+            return 'Invalid castle'
+        elif color == self.WHITE:
             if str(kingDiff) == 'E1 to G1' and str(rookDiff) == 'H1 to F1':
                 return 'O-O'
             elif str(kingDiff) == 'E1 to C1' and str(rookDiff) == 'A1 to D1':
@@ -260,6 +261,8 @@ class PhysInput:
         fileList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 
         color = pMoved.getColor()
+        if color != self.playerColor:
+            return 'Invalid EP'
         moveRf = '6'
         takenRi = '5'
         if color == self.BLACK:
@@ -275,7 +278,7 @@ class PhysInput:
             return 'En passant: Invalid initial file'
         if pMoved.f[0] != pTaken.i[0]:
             return 'En passant: Invalid final file'
-        return pMoved.getMoveStr + 'EP'
+        return pMoved.getMoveStr() + 'EP'
 
 
     def promotionMove(self, diffList):
@@ -351,10 +354,10 @@ class PhysInput:
             return self.promotionMove(diffList)
         
         if self.pieces[diffA.ID] == self.pieces[diffB.ID] == 'P':
-            if diffB.taken:
+            if diffB.taken():
                 if diffB.i != diffA.f:
                     return self.passantMove(diffA, diffB)            
-            elif diffA.taken:
+            elif diffA.taken():
                 if diffA.i != diffB.f:
                     return self.passantMove(diffB, diffA)
 
@@ -362,7 +365,7 @@ class PhysInput:
         
 
     def getPlayerMove(self):
-        self.promptCamera()
+        self.promptCamera(False)
         plFile = open(self.filename, "r")
         diffList = []
         for line in plFile:

@@ -12,15 +12,15 @@ plMoveSetW = [
     ['regMoveBD.txt', 'A7A6'],
     ['regMoveBF.txt', 'A6B5'],
     
-    ['wCastleK.txt', 'o-o'],
-    ['wCastleQ.txt', 'o-o-o'],
-    ['wCastleExtraMove.txt', 'invalid move type aaccd'],
-    ['bCastleK.txt', 'invalid castle'],
+    ['wCastleK.txt', 'O-O'],
+    ['wCastleQ.txt', 'O-O-O'],
+    ['wCastleExtraMove.txt', 'Too many pieces moved:\nE1 to G1\nH1 to F1\nG4 to G3'],
+    ['bCastleK.txt', 'Invalid castle'],
     
     ['wPassantLeft.txt', 'B5A6EP'],
     ['wPassantRight.txt', 'B5C6EP'],
-    ['bPassantLeft.txt', 'invalid EP'],
-    ['passantWrong.txt', 'invalid EP']
+    ['bPassantLeft.txt', 'Invalid EP'],
+    ['passantWrong.txt', 'Invalid EP']
 ]
 
 plMoveSetB = [
@@ -29,15 +29,15 @@ plMoveSetB = [
     ['regMoveBD.txt', 'A7A6'],
     ['regMoveBF.txt', 'A6B5'],
     
-    ['bCastleK.txt', 'o-o'],
-    ['bCastleQ.txt', 'o-o-o'],
-    ['bCastleExtraMove.txt', 'invalid move type bbbdd'],
-    ['wCastleK.txt', 'invalid castle'],
+    ['bCastleK.txt', 'O-O'],
+    ['bCastleQ.txt', 'O-O-O'],
+    ['bCastleExtraMove.txt', 'Too many pieces moved:\nE8 to G8\nH8 to F8\nA2 taken'],
+    ['wCastleK.txt', 'Invalid castle'],
     
     ['bPassantLeft.txt', 'B4A3EP'],
     ['bPassantRight.txt', 'B4C3EP'],
-    ['wPassantLeft.txt', 'invalid EP'],
-    ['passantWrong.txt', 'invalid EP']
+    ['wPassantLeft.txt', 'Invalid EP'],
+    ['passantWrong.txt', 'En passant: Invalid initial rank']
 ]
 
 def testPhysIn(physIn, moveSet):

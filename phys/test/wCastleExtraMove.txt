@@ -1,5 +1,3 @@
-E1a
-G1c
-H1a
-F1c
-G4d
+1 E1 G1
+7 H1 F1
+26 G4 G3

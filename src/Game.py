@@ -108,7 +108,7 @@ def minUIGame(board, playerSide, ai):
     PvP = not ai
     chessGUI = None
     if __name__ != '__main__':
-        chessGUI = Gui.GUI()
+        chessGUI = Gui.GUI(physInput)
     
     while True:
         if not chessGUI:
@@ -147,6 +147,7 @@ def minUIGame(board, playerSide, ai):
                 plRep = 'Pl'
 
             if chessGUI:
+                chessGUI.physInput = physInput
                 command = physInput.getPlayerMove()
             else:
                 command = input(plRep + " : ")
@@ -184,6 +185,7 @@ def minUIGame(board, playerSide, ai):
                 player = "WHITE"
                 if board.currentSide == BLACK:
                     player = "BLACK"
+                physInput.promptCamera(True)
                 chessGUI.showinfo("Next move", "{}, make your next move and press OK.".format(player))
 
         else:

@@ -2,6 +2,7 @@ from tkinter import Tk, ttk, LEFT, RIGHT, BOTTOM, TOP, BOTH, \
     N, S, E, W, NW, Button, Radiobutton, Label, IntVar, NORMAL, DISABLED
 import Game
 import tkinter.messagebox as msgbox
+from PhysIO import PhysInput
 
 WHITE = True
 BLACK = False
@@ -9,10 +10,16 @@ BLACK = False
 
 class GUI:
 
+    def __init__(self, physInput):
+        self.physInput = physInput
+
     def dispAIMove(self, moveStr):
         msg = moveStr[5:7] + ' to ' + moveStr[7:]
-        msg += "\nMake your move and press OK."
+        msg += "\nPlease move my piece for me and press OK."
         msgbox.showinfo("AI Move", msg)
+        self.physInput.promptCamera(True)
+        msg = "Make your move and press OK."
+        msgbox.showinfo("Player Move", msg)
 
     def getPlayerMove(self):
         window = Tk()
