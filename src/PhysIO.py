@@ -1,6 +1,6 @@
 import os
 from capture import capture, capture2
-from templateMatching import genDiffs
+from templateMatching import Match
 
 class PhysInput_deprecated:
 
@@ -212,13 +212,14 @@ class PhysInput:
         moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
         self.filename = moveDir + 'playerMove.txt'
         self.playerColor = playerColor
+        self.matcher = Match()
     
     def promptCamera(self, capt1):
         if capt1:
             capture()
         else:
             capture2()
-            genDiffs()
+            self.matcher.genDiffs()
         #TODO: wait for player to finish turn, call camera prog to generate playerMove.txt
     
     def regMove(self, diffA, diffB):
