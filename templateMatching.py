@@ -19,7 +19,7 @@ class Match:
         self.board = self.createBoard()
         
 
-    def position(corners):
+    def position(self, corners):
         print (corners)
         x = min(corners[0][0],corners[1][0],corners[2][0],corners[3][0])
         y = min(corners[0][1],corners[2][1],corners[1][1],corners[3][1])
@@ -28,7 +28,7 @@ class Match:
         
     #this is for each id in corners (reference from aruco_detect)
         for i in range (0,8):
-            row = board[i] # e.g A
+            row = self.board[i] # e.g A
             for j in range (0,8):
                 square1 = row[j] # e.g A1
       
@@ -42,7 +42,7 @@ class Match:
                   
          
 
-    def createBoard():
+    def createBoard(self):
 
         colMax = 41 #change depending on picture 
         rowMax = 338
@@ -226,7 +226,7 @@ class Match:
     #Aruco returns four corners of the ID 
     '''
 
-    def genDiffs(): #function that runs templateMatching 
+    def genDiffs(self): #function that runs templateMatching 
     #call aruco detect to get ids and corresponding corners
 
         currentSquare = ''
