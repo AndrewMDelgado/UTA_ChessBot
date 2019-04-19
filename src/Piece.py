@@ -7,7 +7,7 @@ X = 0
 Y = 1
 
 
-class Piece:
+class Piece(object):
 
     def __init__(self, board, side, position, movesMade=0):
         self.board = board

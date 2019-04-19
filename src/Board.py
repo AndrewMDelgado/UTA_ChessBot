@@ -215,14 +215,7 @@ class Board:
         return stringRep.rstrip()
     
     def makeUnicodeStringRep(self, pieces):
-        DISPLAY_LOOKUP = {
-            "R": '♜',
-            "N": '♞',
-            "B": '♝',
-            "K": '♚',	
-            "Q": '♛',
-            "P": '♟',
-        }
+        
 
         stringRep = ''
         for y in range(7, -1, -1):
@@ -260,8 +253,10 @@ class Board:
         return str(piece.position[1] + 1)
 
     def fileOfPiece(self, piece):
-        transTable = str.maketrans('01234567', 'abcdefgh')
-        return str(piece.position[0]).translate(transTable)
+        #transTable = str.maketrans('01234567', 'abcdefgh')
+        #return str(piece.position[0]).translate(transTable)
+        fileStr = 'abcdefgh'
+        return fileStr[piece.position[0]]
 
     def getCoordinateNotationOfMove(self, move):
         notation = ""
@@ -376,15 +371,23 @@ class Board:
         return notation
 
     def humanCoordToPosition(self, coord):
-        transTable = str.maketrans('abcdefgh', '12345678')
-        coord = coord.translate(transTable)
-        coord = [int(c)-1 for c in coord]
-        pos = C(coord[0], coord[1])
+        #transTable = str.maketrans('abcdefgh', '12345678')
+        #coord = coord.translate(transTable)
+        #coord = [int(c)-1 for c in coord]
+        #pos = C(coord[0], coord[1])
+        fileStr = 'abcdefgh'
+        f = coord[0]
+        r = coord[1]
+        fpos = fileStr.index(f)
+        rpos = r - 1
+        pos = C(fpos, rpos)
         return pos
 
     def positionToHumanCoord(self, pos):
-        transTable = str.maketrans('01234567', 'abcdefgh')
-        notation = str(pos[0]).translate(transTable) + str(pos[1]+1)
+        #transTable = str.maketrans('01234567', 'abcdefgh')
+        #notation = str(pos[0]).translate(transTable) + str(pos[1]+1)
+        fileStr = 'abcdefgh'
+        notation = fileStr[pos[0]] + str(pos[1] + 1)
         return notation
 
     def isValidPos(self, pos):

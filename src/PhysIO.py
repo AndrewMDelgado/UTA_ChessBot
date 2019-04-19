@@ -1,7 +1,7 @@
 import os
 from Gui import GUI
-#from capture import capture, capture2
-#from templateMatching import Match
+from capture import capture, capture2
+from templateMatching import Match
 
 class PhysInput_deprecated:
 
@@ -213,16 +213,14 @@ class PhysInput:
         moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
         self.filename = moveDir + 'playerMove.txt'
         self.playerColor = playerColor
-        #self.matcher = Match()
+        self.matcher = Match()
     
     def promptCamera(self, capt1):
         if capt1:
-            #capture()
-            return
+            capture()
         else:
-            #capture2()
-            #self.matcher.genDiffs()
-            return
+            capture2()
+            self.matcher.genDiffs()
     
     def promptMove(self):
         temp = GUI(self)

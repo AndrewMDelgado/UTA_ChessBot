@@ -7,6 +7,7 @@ Created on Sat Apr  7 14:48:33 2018
 """
 import numpy as np
 import time
+import os
 from aruco_detect import detectCode
 from aruco_detect import detectCode2
 import matplotlib.image as mpimg
@@ -237,10 +238,12 @@ class Match:
         #Call aruco_detect and return ids with corresponding coordinates  and save as previous state
         changes = []
         ids1, previousState = detectCode()
+        print(ids1)
 
         #after a user move, call aruco_detect and save as current state
 
         ids2, currentState = detectCode2()
+        print(ids2)
         idsPrev = ids1
         idsCurr = ids2
 
@@ -295,12 +298,16 @@ class Match:
                 if f == 0:
                     #get coordinates from corners of previous state
                     #classify square and have (id,from,null) - meaning piece was removed
-                    print(currentID)
+                    #print(currentID)
                     pos1 = self.position(previousState[np.where(idsPrev == (currentID))[0]][0])
-                    pos2 = '_'
+                    pos2 = '__'
                     changes.append((currentID,pos1,pos2))        
 
 
-        print(changes)
-        #print to a file
+        moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
+        filename = moveDir + 'playerMove.txt'
+        output = open(filename, "w")
+        for c in changes:
+            output.write(str(c[0]) + ' ' + str(c[1]) + ' ' + str(c[2]))
+        output.close()
 

@@ -36,8 +36,10 @@ class Move:
             return str(pos[1] + 1)
 
         def fileOfPos(pos):
-            transTable = str.maketrans('01234567', 'abcdefgh')
-            return str(pos[0]).translate(transTable)
+            #transTable = str.maketrans('01234567', 'abcdefgh')
+            #return str(pos[0]).translate(transTable)
+            fileStr = 'abcdefgh'
+            return fileStr[pos[0]]
         
         if self.kingsideCastle or self.queensideCastle:
             return str(self.notation)

@@ -1,8 +1,12 @@
-from tkinter import Tk, ttk, LEFT, RIGHT, BOTTOM, TOP, BOTH, Grid, \
-    N, S, E, W, NW, NE, Button, Radiobutton, Label, Entry, IntVar, BooleanVar, StringVar, NORMAL, DISABLED
+#from tkinter import Tk, ttk, LEFT, RIGHT, BOTTOM, TOP, BOTH, Grid, \
+#    N, S, E, W, NW, NE, Button, Radiobutton, Label, Entry, IntVar, BooleanVar, StringVar, NORMAL, DISABLED
 import os
 import Game
-import tkinter.messagebox as msgbox
+#import tkinter.messagebox as msgbox
+from PhysIO import PhysInput
+from Tkinter import *
+import ttk
+import tkMessageBox as msgbox
 
 WHITE = True
 BLACK = False
@@ -211,10 +215,14 @@ def guiStart():
         if plColor.get() == 3: #Two-player game
             aiDepth = 0
         
+        useCamera = inFormat.get()
         if playerSide or (aiDepth == 0): #WHITE; white goes first
+            if useCamera:
+                physInput = PhysInput(True)
+                temp = GUI(physInput)
+                temp.physInput.promptCamera(True)
             msgbox.showinfo("First move", "WHITE, make your first move and press OK.")
         
-        useCamera = inFormat.get()
         winStart.destroy()
         Game.startFromGui(playerSide, aiDepth, useCamera)
         guiMain()
