@@ -95,7 +95,7 @@ def display(msg, chessGUI, aiMove=False, title="Alert"):
         chessGUI.showinfo(title, msg)
 
 
-def minUIGame(board, playerSide, ai):
+def minUIGame(board, playerSide, ai, useCamera):
     WHITE = True
     BLACK = False
     
@@ -148,7 +148,7 @@ def minUIGame(board, playerSide, ai):
 
             if chessGUI:
                 chessGUI.physInput = physInput
-                command = physInput.getPlayerMove()
+                command = physInput.getPlayerMove(useCamera)
             else:
                 command = input(plRep + " : ")
             
@@ -185,7 +185,8 @@ def minUIGame(board, playerSide, ai):
                 player = "WHITE"
                 if board.currentSide == BLACK:
                     player = "BLACK"
-                physInput.promptCamera(True)
+                if useCamera:
+                    physInput.promptCamera(True)
                 chessGUI.showinfo("Next move", "{}, make your next move and press OK.".format(player))
 
         else:
@@ -291,12 +292,12 @@ def twoPlayerGame(board):
             continue
         makeMove(move, board)
 
-def startFromGui(playerSide, aiDepth):
+def startFromGui(playerSide, aiDepth, useCamera):
     board = Board()
     opponentAI = None
     if aiDepth > 0: #0 indicates two-player game
         opponentAI = AI(board, not playerSide, aiDepth)
-    minUIGame(board, playerSide, opponentAI)
+    minUIGame(board, playerSide, opponentAI, useCamera)
 
 if __name__ == '__main__':
     if customGame:
@@ -321,6 +322,6 @@ if __name__ == '__main__':
         opponentAI = None
         if not twoPlayer:
             opponentAI = AI(board, not playerSide, aiDepth)
-        minUIGame(board, playerSide, opponentAI)
+        minUIGame(board, playerSide, opponentAI, False)
     except KeyboardInterrupt:
         sys.exit()

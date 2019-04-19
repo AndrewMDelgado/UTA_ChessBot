@@ -1,6 +1,7 @@
 import os
-from capture import capture, capture2
-from templateMatching import Match
+from Gui import GUI
+#from capture import capture, capture2
+#from templateMatching import Match
 
 class PhysInput_deprecated:
 
@@ -212,15 +213,20 @@ class PhysInput:
         moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
         self.filename = moveDir + 'playerMove.txt'
         self.playerColor = playerColor
-        self.matcher = Match()
+        #self.matcher = Match()
     
     def promptCamera(self, capt1):
         if capt1:
-            capture()
+            #capture()
+            return
         else:
-            capture2()
-            self.matcher.genDiffs()
-        #TODO: wait for player to finish turn, call camera prog to generate playerMove.txt
+            #capture2()
+            #self.matcher.genDiffs()
+            return
+    
+    def promptMove(self):
+        temp = GUI(self)
+        temp.promptMove()
     
     def regMove(self, diffA, diffB):
         if not diffB:
@@ -365,8 +371,11 @@ class PhysInput:
         return self.regMove(diffA, diffB)
         
 
-    def getPlayerMove(self):
-        self.promptCamera(False)
+    def getPlayerMove(self, cam=True):
+        if cam:
+            self.promptCamera(False)
+        else:
+            self.promptMove()
         plFile = open(self.filename, "r")
         diffList = []
         for line in plFile:
