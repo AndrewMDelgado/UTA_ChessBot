@@ -66,9 +66,9 @@ def makeMove(move, board):
     print("Making move : " + move.notation)
     board.makeMove(move)
 
-def makeMoveReadable(move, board, aiMove, chessGUI=None):
+def makeMoveReadable(move, board, aiMove, chessGUI=None, useCam=False):
     if aiMove:
-        display("AI : " + str(move), chessGUI, aiMove=True)
+        display("AI : " + str(move), chessGUI, aiMove=True, useCam=useCam)
     board.makeMove(move)
 
 def printPointAdvantage(board):
@@ -86,11 +86,11 @@ def undoLastTwoMoves(board):
         board.undoLastMove()
         board.undoLastMove()
 
-def display(msg, chessGUI, aiMove=False, title="Alert"):
+def display(msg, chessGUI, aiMove=False, useCam=False, title="Alert"):
     if not chessGUI:
         print(msg)
     elif aiMove:
-        chessGUI.dispAIMove(msg)
+        chessGUI.dispAIMove(msg, useCam=useCam)
     else:
         chessGUI.showinfo(title, msg)
 
@@ -193,7 +193,7 @@ def minUIGame(board, playerSide, ai, useCamera):
             #print("AI thinking...")
             move = ai.getBestMove()
             move.notation = parser.notationForMove(move)
-            makeMoveReadable(move, board, True, chessGUI)
+            makeMoveReadable(move, board, True, chessGUI, useCam=useCamera)
 
 def startGame(board, playerSide, ai):
     parser = InputParser(board, playerSide)

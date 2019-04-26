@@ -3,7 +3,7 @@
 import os
 import Game
 #import tkinter.messagebox as msgbox
-from PhysIO import PhysInput
+import PhysIO
 from Tkinter import *
 import ttk
 import tkMessageBox as msgbox
@@ -17,129 +17,15 @@ class GUI:
     def __init__(self, physInput):
         self.physInput = physInput
 
-    def dispAIMove(self, moveStr):
+    def dispAIMove(self, moveStr, useCam=False):
         msg = moveStr[5:7] + ' to ' + moveStr[7:]
         msg += "\nPlease move my piece for me and press OK."
         msgbox.showinfo("AI Move", msg)
-        self.physInput.promptCamera(True)
+        if useCam:
+            self.physInput.promptCamera(True)
         msg = "Make your move and press OK."
         msgbox.showinfo("Player Move", msg)
 
-    def getPlayerMove(self):
-
-        def giveMove():
-            moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
-            filename = moveDir + 'playerMove.txt'
-            output = open(filename, "w")
-            output.write('1 ' + iFile.get() + iRank.get() + ' ' + fFile.get() + fRank.get())
-            output.close()
-            winMove.destroy()
-            return
-
-        winMove = Tk()
-        winMove.wm_title("Player Move")
-        winMove.config(width=480, height=300)
-        frames = {}
-        frames['spaces'] = ttk.Frame(winMove)
-        frames['spaces'].pack(side=TOP, pady=10)
-
-        frames['space_i'] = ttk.LabelFrame(frames['spaces'], text='From', labelanchor=NW, width=235, height=250)
-        frames['space_f'] = ttk.LabelFrame(frames['spaces'], text='To', labelanchor=NW, width=235, height=250)
-        frames['space_i'].pack(side=LEFT)
-        frames['space_f'].pack(side=RIGHT)
-        frames['space_i'].pack_propagate(False)
-        frames['space_f'].pack_propagate(False)
-
-        frames['space_iF'] = ttk.Frame(frames['space_i'], width=165, height=250)
-        frames['space_iR'] = ttk.Frame(frames['space_i'], width=165, height=250)
-        frames['space_fF'] = ttk.Frame(frames['space_f'], width=165, height=250)
-        frames['space_fR'] = ttk.Frame(frames['space_f'], width=165, height=250)
-        frames['space_iF'].pack(side=LEFT)
-        frames['space_iR'].pack(side=RIGHT)
-        frames['space_fF'].pack(side=LEFT)
-        frames['space_fR'].pack(side=RIGHT)
-        
-        iFile = StringVar()
-        iRank = StringVar()
-        iFile.set('A')
-        iRank.set('1')
-        iF1 = Radiobutton(frames['space_iF'], text='A', variable=iFile, value='A')
-        iF2 = Radiobutton(frames['space_iF'], text='B', variable=iFile, value='B')
-        iF3 = Radiobutton(frames['space_iF'], text='C', variable=iFile, value='C')
-        iF4 = Radiobutton(frames['space_iF'], text='D', variable=iFile, value='D')
-        iF5 = Radiobutton(frames['space_iF'], text='E', variable=iFile, value='E')
-        iF6 = Radiobutton(frames['space_iF'], text='F', variable=iFile, value='F')
-        iF7 = Radiobutton(frames['space_iF'], text='G', variable=iFile, value='G')
-        iF8 = Radiobutton(frames['space_iF'], text='H', variable=iFile, value='H')
-        iF1.pack(anchor=NW)
-        iF2.pack(anchor=NW)
-        iF3.pack(anchor=NW)
-        iF4.pack(anchor=NW)
-        iF5.pack(anchor=NW)
-        iF6.pack(anchor=NW)
-        iF7.pack(anchor=NW)
-        iF8.pack(anchor=NW)
-        iR1 = Radiobutton(frames['space_iR'], text='1', variable=iRank, value='1')
-        iR2 = Radiobutton(frames['space_iR'], text='2', variable=iRank, value='2')
-        iR3 = Radiobutton(frames['space_iR'], text='3', variable=iRank, value='3')
-        iR4 = Radiobutton(frames['space_iR'], text='4', variable=iRank, value='4')
-        iR5 = Radiobutton(frames['space_iR'], text='5', variable=iRank, value='5')
-        iR6 = Radiobutton(frames['space_iR'], text='6', variable=iRank, value='6')
-        iR7 = Radiobutton(frames['space_iR'], text='7', variable=iRank, value='7')
-        iR8 = Radiobutton(frames['space_iR'], text='8', variable=iRank, value='8')
-        iR1.pack(anchor=E)
-        iR2.pack(anchor=E)
-        iR3.pack(anchor=E)
-        iR4.pack(anchor=E)
-        iR5.pack(anchor=E)
-        iR6.pack(anchor=E)
-        iR7.pack(anchor=E)
-        iR8.pack(anchor=E)
-
-        fFile = StringVar()
-        fRank = StringVar()
-        fFile.set('A')
-        fRank.set('2')
-        fF1 = Radiobutton(frames['space_fF'], text='A', variable=fFile, value='A')
-        fF2 = Radiobutton(frames['space_fF'], text='B', variable=fFile, value='B')
-        fF3 = Radiobutton(frames['space_fF'], text='C', variable=fFile, value='C')
-        fF4 = Radiobutton(frames['space_fF'], text='D', variable=fFile, value='D')
-        fF5 = Radiobutton(frames['space_fF'], text='E', variable=fFile, value='E')
-        fF6 = Radiobutton(frames['space_fF'], text='F', variable=fFile, value='F')
-        fF7 = Radiobutton(frames['space_fF'], text='G', variable=fFile, value='G')
-        fF8 = Radiobutton(frames['space_fF'], text='H', variable=fFile, value='H')
-        fF1.pack(anchor=NW)
-        fF2.pack(anchor=NW)
-        fF3.pack(anchor=NW)
-        fF4.pack(anchor=NW)
-        fF5.pack(anchor=NW)
-        fF6.pack(anchor=NW)
-        fF7.pack(anchor=NW)
-        fF8.pack(anchor=NW)
-        fR1 = Radiobutton(frames['space_fR'], text='1', variable=fRank, value='1')
-        fR2 = Radiobutton(frames['space_fR'], text='2', variable=fRank, value='2')
-        fR3 = Radiobutton(frames['space_fR'], text='3', variable=fRank, value='3')
-        fR4 = Radiobutton(frames['space_fR'], text='4', variable=fRank, value='4')
-        fR5 = Radiobutton(frames['space_fR'], text='5', variable=fRank, value='5')
-        fR6 = Radiobutton(frames['space_fR'], text='6', variable=fRank, value='6')
-        fR7 = Radiobutton(frames['space_fR'], text='7', variable=fRank, value='7')
-        fR8 = Radiobutton(frames['space_fR'], text='8', variable=fRank, value='8')
-        fR1.pack(anchor=E)
-        fR2.pack(anchor=E)
-        fR3.pack(anchor=E)
-        fR4.pack(anchor=E)
-        fR5.pack(anchor=E)
-        fR6.pack(anchor=E)
-        fR7.pack(anchor=E)
-        fR8.pack(anchor=E)
-        
-        frames['button'] = ttk.Frame(winMove)
-        frames['button'].pack()
-        submit = Button(frames['button'], text="Give input", command=giveMove)
-        submit.pack(side=LEFT, padx = 15, pady=15)
-    
-        winMove.mainloop()
-    
     def promptMove(self):
         def giveMove():
             moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
@@ -218,7 +104,7 @@ def guiStart():
         useCamera = inFormat.get()
         if playerSide or (aiDepth == 0): #WHITE; white goes first
             if useCamera:
-                physInput = PhysInput(True)
+                physInput = PhysIO.PhysInput(True)
                 temp = GUI(physInput)
                 temp.physInput.promptCamera(True)
             msgbox.showinfo("First move", "WHITE, make your first move and press OK.")
@@ -275,7 +161,7 @@ def guiStart():
     aiLabel.pack(anchor=W, pady=20)
 
     inFormat = BooleanVar()
-    inFormat.set(False)
+    inFormat.set(True)
     I1 = Radiobutton(frames['input'], text="Camera", variable=inFormat, value=True)
     I2 = Radiobutton(frames['input'], text="GUI", variable=inFormat, value=False)
     I1.pack(anchor=W)

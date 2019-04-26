@@ -21,11 +21,10 @@ def detectCode():
     cv2.resizeWindow('so52814747',600,600)
     cv2.imshow('so52814747', image)
     cv2.waitKey(0)
-    cv2.destroyAllWindows() 
-    '''
+    cv2.destroyAllWindows()
+    
     #for i in corners:
-     #   print(i)
-    '''    
+    #    print(i)
        
 
     return (ids,corners)
@@ -58,10 +57,10 @@ def detectCode2():
     cv2.imshow('so52814747', image)
     cv2.waitKey(0)
     cv2.destroyAllWindows() 
-    '''
+
     #for i in corners:
      #   print(i)
-    '''    
+
        
 
     return (ids,corners)

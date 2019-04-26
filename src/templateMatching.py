@@ -45,8 +45,11 @@ class Match:
 
     def createBoard(self):
 
-        colMax = 41 #change depending on picture 
-        rowMax = 338
+        colMax = 446 #change depending on picture 
+        rowMax = 324
+
+        colMin = 592
+        rowMin = 447
 
 
         #print("(",rowMax,"," ,colMax,")")
@@ -54,7 +57,7 @@ class Match:
 
             
         topL = [colMax,rowMax]
-        botR = [121,415]
+        botR = [colMin,rowMin] 
 
         topLi = topL
         botRi = botR
@@ -238,12 +241,12 @@ class Match:
         #Call aruco_detect and return ids with corresponding coordinates  and save as previous state
         changes = []
         ids1, previousState = detectCode()
-        print(ids1)
+       
 
         #after a user move, call aruco_detect and save as current state
 
         ids2, currentState = detectCode2()
-        print(ids2)
+       
         idsPrev = ids1
         idsCurr = ids2
 
@@ -259,17 +262,22 @@ class Match:
         #print("uds2: ",ids2)
         #Run algorithm to detect move 
         if (len(previousState) == len(currentState)):
-          
+            #print("same number of pieces on board")
             #find which id changed coordinates 
             for i in range(0, len(previousState)):
-                
-                #if pieces move slightly, that will also be considered as a change in coordinate so if we have more than one change we need to look more into it 
-                if (previousState[i][0]).any() != (currentState[i][0]).any(): #Assuming the ids are ordered, if not then order them using a function  
+                #print("this is what we are comparing: ",previousState[i][0],currentState[i][0])
+                #if pieces move slightly, that will also be considered as a change in coordinate so if we have more than one change we need to look more into it
+                #THIS STUPID COMPARISON IS NOT WORKING ANYMORE! ... OF COURSE..."
+
+                if not(np.array_equal((previousState[i][0]),(currentState[i][0][0]))):
+                #if (previousState[i][0]).any() != (currentState[i][0][0]).any(): #Assuming the ids are ordered, if not then order them using a function  
                         pos1 = self.position(previousState[i][0])#call function that computes squares - takes corners of ID
                         pos2 = self.position(currentState[i][0])
 
                         changes.append((idsPrev[i],pos1,pos2))
+                        print(idsPrev[i],pos1,pos2)
                 else:
+                    #print("nope")
                     pass
                 
 
@@ -285,7 +293,9 @@ class Match:
                     if currentID == ids2[j]:
                         f = 1
                         #still check if coordinates changed
-                        if (previousState[np.where(idsPrev == (currentID))[0]][0]).any() != (currentState[np.where(idsCurr == (currentID))[0]][0]).any():
+                        
+                        if not(np.array_equal((previousState[np.where(idsPrev == (currentID))[0]][0]),(currentState[np.where(idsCurr == (currentID))[0]][0]))):
+                        #if (previousState[np.where(idsPrev == (currentID))[0]][0]).any() != (currentState[np.where(idsCurr == (currentID))[0]][0]).any():
                             #compute square change
                             pos1 = self.position(previousState[np.where(idsPrev == (currentID))[0]][0])#call function that computes squares - takes corners of ID
                             pos2 = self.position(currentState[np.where(idsCurr == (currentID))[0]][0])
@@ -303,11 +313,13 @@ class Match:
                     pos2 = '__'
                     changes.append((currentID,pos1,pos2))        
 
+        print(changes)
 
         moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
         filename = moveDir + 'playerMove.txt'
         output = open(filename, "w")
         for c in changes:
-            output.write(str(c[0]) + ' ' + str(c[1]) + ' ' + str(c[2]))
+            if c[1] != c[2]:
+                output.write(str(c[0]) + ' ' + str(c[1]) + ' ' + str(c[2]) + '\n')
         output.close()
 
