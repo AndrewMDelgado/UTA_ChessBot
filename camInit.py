@@ -8,28 +8,34 @@ Created on Sat Apr  7 14:48:33 2018
 import numpy as np
 import time
 import os
+chessRoot = os.path.dirname(os.path.realpath(__file__)) + '/'
 #from aruco_detect import detectCode
 #from aruco_detect import detectCode2
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import skimage.feature as sk
+import sys
+sys.path.insert(0, chessRoot + 'src/')
+import k2
 
-initName = os.path.dirname(os.path.realpath(__file__)) + "/init.jpeg"
+initName = chessRoot + "init.jpg"
 os.system("raspistill -o \"" + initName + "\"")
-fullImg = mpimg.imread(initName)
+k2.undistort(initName)
+defished = chessRoot + "phys/undistorted.jpg"
+
+fullImg = mpimg.imread(defished)
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 fullImgGray = rgb2gray(fullImg)
 #plt.imshow(fullImgGray, cmap = plt.get_cmap('gray'))
 #plt.show()
 
-colMax = 446 #change depending on picture 
-rowMax = 324
+colMax = 625 #change depending on picture 
+rowMax = 305
 
-colMin = 592
-rowMin = 480
-
+colMin = 823
+rowMin = 490
 
 #print("(",rowMax,"," ,colMax,")")
 
@@ -191,6 +197,7 @@ board.append(H)
 
 img_copy = fullImg 
 
+'''
 #This is to make sure the board is stored correctly     
 for i in range (A[0][0][1], A[0][1][1]):
     for u in range (A[0][0][0],(A[0][1][0])):
@@ -199,9 +206,20 @@ for i in range (A[0][0][1], A[0][1][1]):
 for i in range (A[3][0][1], A[3][1][1]):
     for u in range (A[3][0][0],(A[3][1][0])):
         img_copy[i][u] = 0
+'''
+
+
+fileList = [A, B, C, D, E, F, G, H]
+for fpos, file in enumerate(fileList):
+    for rank in range(8):
+        isOdd = bool((fpos + rank) % 2)
+        if isOdd:
+            for i in range(file[rank][0][1], file[rank][1][1]):
+                for u in range(file[rank][0][0], file[rank][1][0]):
+                    if 0 <= i <= len(img_copy) and 0 <= u <= len(img_copy[0]):
+                        img_copy[i][u] = 0
    
    
-    
 plt.figure(3)
 fullImgGray = rgb2gray(img_copy)        
 plt.imshow(fullImgGray, cmap = plt.get_cmap('gray'))

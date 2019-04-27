@@ -94,9 +94,9 @@ class PhysInput:
     def promptCamera(self, preMove):
         moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
         if preMove:
-            os.system("raspistill -o \"" + moveDir + "previous.png\"")
+            os.system("raspistill -o \"" + moveDir + "previous.jpg\"")
         else:
-            os.system("raspistill -o \"" + moveDir + "current.png\"")
+            os.system("raspistill -o \"" + moveDir + "current.jpg\"")
             self.matcher.genDiffs()
         
         '''

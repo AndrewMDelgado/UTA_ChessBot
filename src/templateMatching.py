@@ -45,11 +45,11 @@ class Match:
 
     def createBoard(self):
 
-        colMax = 446 #change depending on picture 
-        rowMax = 324
+        colMax = 600 #change depending on picture 
+        rowMax = 266
 
-        colMin = 592
-        rowMin = 447
+        colMin = 800
+        rowMin = 456
 
 
         #print("(",rowMax,"," ,colMax,")")
@@ -240,12 +240,12 @@ class Match:
         #Have aruco detect make a 2D array of id,corners 
         #Call aruco_detect and return ids with corresponding coordinates  and save as previous state
         changes = []
-        ids1, previousState = detectCode()
+        ids1, previousState = detectCode('previous.jpg')
        
 
         #after a user move, call aruco_detect and save as current state
 
-        ids2, currentState = detectCode2()
+        ids2, currentState = detectCode('current.jpg')
        
         idsPrev = ids1
         idsCurr = ids2
