@@ -1,5 +1,6 @@
 import os
 from Gui import GUI
+from k2 import undistort
 from templateMatching import Match
 
 class PhysInput:
@@ -94,9 +95,17 @@ class PhysInput:
     def promptCamera(self, preMove):
         moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
         if preMove:
+            print('Capturing previous.jpg...')
             os.system("raspistill -o \"" + moveDir + "previous.jpg\"")
+            print('Undistorting...')
+            undistort(moveDir + 'previous.jpg')
+            print('Complete.')
         else:
+            print('Capturing current.jpg...')
             os.system("raspistill -o \"" + moveDir + "current.jpg\"")
+            print('Undistorting...')
+            undistort(moveDir + 'current.jpg')
+            print('Complete. Generating differences.')
             self.matcher.genDiffs()
         
         '''

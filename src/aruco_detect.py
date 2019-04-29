@@ -8,7 +8,7 @@ moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
 def detectCode(filename):
     global moveDir
     #image = cv2.imread("start.jpeg")
-    undistort(moveDir + filename)
+    print('Reading ' + filename + '...')
     image = cv2.imread(moveDir + filename)
     aruco_dict = aruco.Dictionary_get(aruco.DICT_ARUCO_ORIGINAL)
 
@@ -16,7 +16,9 @@ def detectCode(filename):
     corners, ids, rejectedImgPoints = aruco.detectMarkers(
     image, aruco_dict, parameters=parameters)
     #print(corners, ids, rejectedImgPoints)
+    print('Detecting markers...')
     aruco.drawDetectedMarkers(image, corners, ids)
+    print('Complete.')
     
     #aruco.drawDetectedMarkers(image, rejectedImgPoints, borderColor=(100, 0, 240))
     cv2.namedWindow('so52814747',cv2.WINDOW_NORMAL)
@@ -24,9 +26,11 @@ def detectCode(filename):
     cv2.imshow('so52814747', image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    
+
+    '''
     for i in corners:
         print(i)
+    '''
     
     '''
     if ids != None:
