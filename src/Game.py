@@ -135,7 +135,7 @@ def minUIGame(board, playerSide, ai, useCamera, useMecArm):
 
     physOutput = None
     if useMecArm:
-        physOutput = PhysOutput()
+        physOutput = PhysOutput(not playerSide)
     
     PvP = not ai
     chessGUI = None

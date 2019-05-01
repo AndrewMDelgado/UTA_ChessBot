@@ -300,11 +300,30 @@ class PhysInput:
 
 class PhysOutput:
     
-    def __init__(self):
-        pass
+    def __init__(self, aiColor):
+        self.aiColor = aiColor
 
-    def movePieces(self, move):
-        print('Moving piece:' + str(move))
+    def processMove(self, move):
+        print('Moving piece: ' + str(move))
+        if move.pieceToCapture:
+            # take move.pieceToCapture
+            # move piece
+            pass
+        elif move.kingsideCastle or move.queensideCastle:
+            # move king
+            # move move.specialMovePiece
+            pass
+        elif move.passant:
+            # move piece
+            # take move.specialMovePiece
+            pass
+        elif move.promotion:
+            # take piece
+            # make move.specialMovePiece(?)
+            pass
+        else:
+            # move piece
+            pass
 
 
 

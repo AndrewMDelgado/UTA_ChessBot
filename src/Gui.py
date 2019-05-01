@@ -37,7 +37,11 @@ class GUI:
             moveDir = dirname(realpath(__file__)) + '/../phys/'
             filename = moveDir + 'playerMove.txt'
             output = open(filename, "w")
-            output.write('1 ' + e1.get() + ' ' + e2.get())
+            pos1 = e1.get()
+            pos2 = e2.get()
+            pos1.upper()
+            pos2.upper()
+            output.write('1 ' + pos1 + ' ' + pos2)
             winPrompt.destroy()
             return
 
