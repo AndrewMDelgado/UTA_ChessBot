@@ -1,9 +1,9 @@
 import numpy as np
 import cv2
 import cv2.aruco as aruco
-import os
+from os.path import dirname, realpath
 from k2 import undistort
-moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
+moveDir = dirname(realpath(__file__)) + '/../phys/'
 
 def detectCode(filename):
     global moveDir

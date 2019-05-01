@@ -1,17 +1,18 @@
 import os
+from os.path import dirname, realpath
 from Gui import GUI
 from k2 import undistort
 from templateMatching import Match
 
 class PhysInput:
 
-    kingIDs   = [1, 17]
-    queenIDs  = [2, 18]
-    bishopIDs = [3, 4, 19, 20]
-    knightIDs = [5, 6, 21, 22]
-    rookIDs   = [7, 8, 23, 24]
-    pawnIDs   = [9, 10, 11, 12, 13, 14, 15, 16,
-                25, 26, 27, 28, 29, 30, 31, 32]
+    kingIDs   = [0, 16]
+    queenIDs  = [1, 17]
+    bishopIDs = [2, 3, 18, 19]
+    knightIDs = [4, 5, 20, 21]
+    rookIDs   = [6, 7, 22, 23]
+    pawnIDs   = [8, 9, 10, 11, 12, 13, 14, 15,
+                24, 25, 26, 27, 28, 29, 30, 31]
 
     pieces = dict.fromkeys(kingIDs, 'K')
     pieces.update(dict.fromkeys(queenIDs, 'Q'))
@@ -59,7 +60,7 @@ class PhysInput:
             diffID = diff[0]
             if not diffID.isdigit():
                 return False
-            elif int(diffID) < 0 or int(diffID) > 32:
+            elif int(diffID) < 0 or int(diffID) > 31:
                 return False
             
             init = diff[1]
@@ -76,7 +77,7 @@ class PhysInput:
             return self.i == '__'
         
         def getColor(self):
-            return self.ID < 17
+            return self.ID < 16
         
         def getMoveStr(self):
             return self.i + self.f
@@ -87,13 +88,13 @@ class PhysInput:
     
 
     def __init__(self, playerColor):
-        moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
+        moveDir = dirname(realpath(__file__)) + '/../phys/'
         self.filename = moveDir + 'playerMove.txt'
         self.playerColor = playerColor
         self.matcher = Match()
     
     def promptCamera(self, preMove):
-        moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
+        moveDir = dirname(realpath(__file__)) + '/../phys/'
         if preMove:
             print('Capturing previous.jpg...')
             os.system("raspistill -o \"" + moveDir + "previous.jpg\"")

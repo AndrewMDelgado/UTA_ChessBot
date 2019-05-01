@@ -1,6 +1,6 @@
 #from tkinter import Tk, ttk, LEFT, RIGHT, BOTTOM, TOP, BOTH, Grid, \
 #    N, S, E, W, NW, NE, Button, Radiobutton, Label, Entry, IntVar, BooleanVar, StringVar, NORMAL, DISABLED
-import os
+from os.path import dirname, realpath
 import Game
 #import tkinter.messagebox as msgbox
 import PhysIO
@@ -28,7 +28,7 @@ class GUI:
 
     def promptMove(self):
         def giveMove():
-            moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
+            moveDir = dirname(realpath(__file__)) + '/../phys/'
             filename = moveDir + 'playerMove.txt'
             output = open(filename, "w")
             output.write('1 ' + e1.get() + ' ' + e2.get())

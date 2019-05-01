@@ -1,10 +1,10 @@
 import PhysIO
-import os
+from os.path import dirname, realpath
 
 WHITE = True
 BLACK = False
 
-moveDir = os.path.dirname(os.path.realpath(__file__)) + '/../phys/'
+moveDir = dirname(realpath(__file__)) + '/../phys/'
 
 plMoveSetW = [
     ['regMoveAC.txt', 'A2A3'],
