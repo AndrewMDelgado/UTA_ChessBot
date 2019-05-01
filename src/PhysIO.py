@@ -301,7 +301,10 @@ class PhysInput:
 class PhysOutput:
     
     def __init__(self):
-        self.a = 5
+        pass
+
+    def movePieces(self, move):
+        print('Moving piece:' + str(move))
 
 
 

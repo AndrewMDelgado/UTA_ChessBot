@@ -2,7 +2,7 @@ from Board import Board
 from InputParser import InputParser
 from AI import AI
 from GamePrep import GamePrep
-from PhysIO import PhysInput
+from PhysIO import PhysInput, PhysOutput
 import Gui
 import sys
 import random
@@ -66,11 +66,6 @@ def makeMove(move, board):
     print("Making move : " + move.notation)
     board.makeMove(move)
 
-def makeMoveReadable(move, board, aiMove, chessGUI=None, useCam=False):
-    if aiMove:
-        display("AI : " + str(move), chessGUI, aiMove=True, useCam=useCam)
-    board.makeMove(move)
-
 def printPointAdvantage(board):
     print("Currently, the point difference is : " +
           str(board.getPointAdvantageOfSide(board.currentSide)))
@@ -86,25 +81,62 @@ def undoLastTwoMoves(board):
         board.undoLastMove()
         board.undoLastMove()
 
-def display(msg, chessGUI, aiMove=False, useCam=False, title="Alert"):
+def specialCommands(cmd, board, parser):
+    if command.lower() == 'u':
+        undoLastTwoMoves(board)
+    elif command.lower() == '?':
+        printCommandOptions()
+    elif command.lower() == 'l':
+        printAllLegalMoves(board, parser)
+    elif command.lower() == 'r':
+        move = getRandomMove(board, parser)
+        return False
+    elif command.lower() == 'p':
+        print()
+        print(board)
+        print()
+    elif command.lower() == 's' or command.lower() == 'save':
+        saveGame(board)
+    return True
+
+
+def display(msg, chessGUI, aiMove=False, useCam=False, useArm=False, title="Alert"):
     if not chessGUI:
         print(msg)
     elif aiMove:
-        chessGUI.dispAIMove(msg, useCam=useCam)
+        chessGUI.dispAIMove(msg, useCam=useCam, useArm=useArm)
     else:
         chessGUI.showinfo(title, msg)
 
 
-def minUIGame(board, playerSide, ai, useCamera):
+def makeMoveReadable(move, board, aiMove, chessGUI=None,
+                     useCam=False, physOutput=None):
+    if aiMove:
+        useArm = False
+        if physOutput:
+            useArm = True
+            physOutput.movePieces(move)
+        display("AI : " + str(move), chessGUI, aiMove=True,
+                useCam=useCam, useArm=useArm)
+    board.makeMove(move)
+
+
+def minUIGame(board, playerSide, ai, useCamera, useMecArm):
     WHITE = True
     BLACK = False
     
     parserWhite = InputParser(board, WHITE)
     parserBlack = InputParser(board, BLACK)
     parser = parserWhite
+    
     physInputWhite = PhysInput(WHITE)
     physInputBlack = PhysInput(BLACK)
     physInput = physInputWhite
+
+    physOutput = None
+    if useMecArm:
+        physOutput = PhysOutput()
+    
     PvP = not ai
     chessGUI = None
     if __name__ != '__main__':
@@ -153,28 +185,13 @@ def minUIGame(board, playerSide, ai, useCamera):
                 command = input(plRep + " : ")
             
             move = None
-            if command.lower() == 'u':
-                undoLastTwoMoves(board)
-                continue
-            elif command.lower() == '?':
-                printCommandOptions()
-                continue
-            elif command.lower() == 'l':
-                printAllLegalMoves(board, parser)
-                continue
-            elif command.lower() == 'r':
-                move = getRandomMove(board, parser)
-            elif command.lower() == 'p':
-                print()
-                print(board)
-                print()
-                continue
-            elif command.lower() == 's' or command.lower() == 'save':
-                saveGame(board)
-                continue
-            elif command.lower() == 'exit' or command.lower() == 'quit' \
-                or command.lower() == 'q':
+            if command.lower() in ['u', '?', 'l', 'r', 'p', 's']:
+                cont = specialCommands(command.lower(), board, parser)
+                if cont:
+                    continue
+            elif command.lower() in ['exit', 'quit', 'q']:
                 return
+            
             try:
                 move = parser.convertInput(command)
             except ValueError as error:
@@ -193,15 +210,16 @@ def minUIGame(board, playerSide, ai, useCamera):
             #print("AI thinking...")
             move = ai.getBestMove()
             move.notation = parser.notationForMove(move)
-            makeMoveReadable(move, board, True, chessGUI, useCam=useCamera)
+            makeMoveReadable(move, board, True, chessGUI,
+                             useCam=useCamera, physOutput=physOutput)
 
 
-def startFromGui(playerSide, aiDepth, useCamera):
+def startFromGui(playerSide, aiDepth, useCamera, useMecArm):
     board = Board()
     opponentAI = None
     if aiDepth > 0: #0 indicates two-player game
         opponentAI = AI(board, not playerSide, aiDepth)
-    minUIGame(board, playerSide, opponentAI, useCamera)
+    minUIGame(board, playerSide, opponentAI, useCamera, useMecArm)
 
 if __name__ == '__main__':
     if customGame:
@@ -226,6 +244,6 @@ if __name__ == '__main__':
         opponentAI = None
         if not twoPlayer:
             opponentAI = AI(board, not playerSide, aiDepth)
-        minUIGame(board, playerSide, opponentAI, False)
+        minUIGame(board, playerSide, opponentAI, False, False)
     except KeyboardInterrupt:
         sys.exit()

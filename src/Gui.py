@@ -1,5 +1,8 @@
+
 #from tkinter import Tk, ttk, LEFT, RIGHT, BOTTOM, TOP, BOTH, Grid, \
 #    N, S, E, W, NW, NE, Button, Radiobutton, Label, Entry, IntVar, BooleanVar, StringVar, NORMAL, DISABLED
+
+
 from os.path import dirname, realpath
 import Game
 #import tkinter.messagebox as msgbox
@@ -17,9 +20,12 @@ class GUI:
     def __init__(self, physInput):
         self.physInput = physInput
 
-    def dispAIMove(self, moveStr, useCam=False):
+    def dispAIMove(self, moveStr, useCam=False, useArm=False):
         msg = moveStr[5:7] + ' to ' + moveStr[7:]
-        msg += "\nPlease move my piece for me and press OK."
+        if useArm:
+            msg += "\nPlease allow arm to finish move and press OK."
+        else:
+            msg += "\nPlease move my piece for me and press OK."
         msgbox.showinfo("AI Move", msg)
         if useCam:
             self.physInput.promptCamera(True)
@@ -101,16 +107,17 @@ def guiStart():
         if plColor.get() == 3: #Two-player game
             aiDepth = 0
         
-        useCamera = inFormat.get()
+        useCamera = useCam.get()
+        useMecArm = useArm.get()
         if playerSide or (aiDepth == 0): #WHITE; white goes first
             if useCamera:
                 physInput = PhysIO.PhysInput(True)
                 temp = GUI(physInput)
                 temp.physInput.promptCamera(True)
             msgbox.showinfo("First move", "WHITE, make your first move and press OK.")
-        
+
         winStart.destroy()
-        Game.startFromGui(playerSide, aiDepth, useCamera)
+        Game.startFromGui(playerSide, aiDepth, useCamera, useMecArm)
         guiMain()
     
     def exitGame():
@@ -126,15 +133,15 @@ def guiStart():
     frames['options'] = ttk.Frame(winStart)
     frames['options'].pack(side=TOP, pady=10)
     
-    frames['color'] = ttk.LabelFrame(frames['options'], text='Player Color', labelanchor=NW, width = 155, height = 150)
-    frames['level'] = ttk.LabelFrame(frames['options'], text='AI Level', labelanchor=NW, width = 155, height = 150)
-    frames['input'] = ttk.LabelFrame(frames['options'], text='Input Format', labelanchor=NW, width=155, height=150)
+    frames['color'] = ttk.LabelFrame(frames['options'], text='Player Color', labelanchor=NW, width = 175, height = 150)
+    frames['level'] = ttk.LabelFrame(frames['options'], text='AI Level', labelanchor=NW, width = 175, height = 150)
+    frames['optIO'] = ttk.LabelFrame(frames['options'], text='IO Systems', labelanchor=NW, width=115, height=150)
     frames['color'].pack(fill=BOTH, expand=True, anchor=N, side=LEFT)
-    frames['input'].pack(fill=BOTH, expand=True, anchor=N, side=RIGHT)
+    frames['optIO'].pack(fill=BOTH, expand=True, anchor=N, side=RIGHT)
     frames['level'].pack(fill=BOTH, expand=True, anchor=N, side=RIGHT)
     frames['color'].pack_propagate(False)
     frames['level'].pack_propagate(False)
-    frames['input'].pack_propagate(False)
+    frames['optIO'].pack_propagate(False)
     
     plColor = IntVar()
     plColor.set(1)
@@ -160,10 +167,12 @@ def guiStart():
     aiLabel = Label(frames['level'], text="AI looks one move ahead.")
     aiLabel.pack(anchor=W, pady=20)
 
-    inFormat = BooleanVar()
-    inFormat.set(True)
-    I1 = Radiobutton(frames['input'], text="Camera", variable=inFormat, value=True)
-    I2 = Radiobutton(frames['input'], text="GUI", variable=inFormat, value=False)
+    useCam = BooleanVar()
+    useArm = BooleanVar()
+    useCam.set(True)
+    useArm.set(False)
+    I1 = Checkbutton(frames['optIO'], text="Camera", variable=useCam)
+    I2 = Checkbutton(frames['optIO'], text="Arm", variable=useArm)
     I1.pack(anchor=W)
     I2.pack(anchor=W)
 
