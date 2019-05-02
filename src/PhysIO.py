@@ -305,11 +305,11 @@ class PhysOutput:
         self.board = Match().board
         self.heights = {
             'K':0,
-            'Q':0,
-            'B':0,
-            'N':0,
-            'R':0,
-            'P':0
+            'Q':1,
+            'B':2,
+            'N':4,
+            'R':6,
+            'P':8
         }
 
     def movePiece(self, piece, oldPos, newPos):
@@ -336,7 +336,7 @@ class PhysOutput:
         
         height = self.heights[piece.stringRep]
         #move piece from coord1 to coord2 according to height
-        print(str(coord1) + ' to ' + str(coord2) + ' (height ' + height + ')')
+        print(str(coord1) + ' to ' + str(coord2) + ' (height ' + str(height) + ')')
 
         
 

@@ -29,16 +29,19 @@ def fillSquare(img, sq, val):
                 except IndexError:
                     pass
 
+sqVals = open(chessRoot + 'sqVals.txt', "w")
 fileList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 virtualBoard = Match().board
 for r, row in enumerate(virtualBoard):
     for f, sq in enumerate(row):
+        sqVals.write(str(sq) + ': ' + str(sq.topL) + ' to ' + str(sq.botR) + '\n')
         spaceVal = r + f + 1
         isOdd = bool(spaceVal % 2)
         if isOdd:
             fillSquare(fullImgGray, sq, 0)
         if str(sq) in whiteout:
             fillSquare(fullImgGray, sq, 255)
+sqVals.close()
 
 plt.figure(3)
 plt.imshow(fullImgGray, cmap=plt.get_cmap('gray'))
