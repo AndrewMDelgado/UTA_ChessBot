@@ -320,14 +320,14 @@ class PhysOutput:
         
         if oldPos != '__':
             sq1 = self.board[oldPos[1]][oldPos[0]]
-            xVal = (sq1.minX + sq1.maxX) / 2
-            yVal = (sq1.minY + sq1.maxY) / 2
+            xVal = (sq1.minX() + sq1.maxX()) / 2
+            yVal = (sq1.minY() + sq1.maxY()) / 2
             coord1 = [xVal, yVal]
         
         if newPos != '__':
             sq2 = self.board[newPos[1]][newPos[0]]
-            xVal = (sq2.minX + sq2.maxX) / 2
-            yVal = (sq2.minY + sq2.maxY) / 2
+            xVal = (sq2.minX() + sq2.maxX()) / 2
+            yVal = (sq2.minY() + sq2.maxY()) / 2
             coord2 = [xVal, yVal]
         
         height = self.heights[piece.stringRep]
