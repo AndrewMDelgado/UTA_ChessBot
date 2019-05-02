@@ -158,7 +158,7 @@ def guiStart():
     plLabel.pack(anchor=W, pady=20)
 
     aiLevel = IntVar()
-    aiLevel.set(2)
+    aiLevel.set(1)
     L1 = Radiobutton(frames['level'], text="Level 1", variable=aiLevel, value=1, command=aiSel)
     L2 = Radiobutton(frames['level'], text="Level 2", variable=aiLevel, value=2, command=aiSel)
     L3 = Radiobutton(frames['level'], text="Level 3", variable=aiLevel, value=3, command=aiSel)
@@ -171,7 +171,7 @@ def guiStart():
 
     useCam = BooleanVar()
     useArm = BooleanVar()
-    useCam.set(True)
+    useCam.set(False)
     useArm.set(False)
     I1 = Checkbutton(frames['optIO'], text="Camera", variable=useCam)
     I2 = Checkbutton(frames['optIO'], text="Arm", variable=useArm)

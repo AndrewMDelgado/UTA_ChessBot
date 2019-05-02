@@ -318,13 +318,17 @@ class PhysOutput:
         coord1 = []
         coord2 = []
         
-        if oldPos != '__':
+        if oldPos == '__':
+            coord1 = '[Reserves]'
+        else:
             sq1 = self.board[oldPos[1]][oldPos[0]]
             xVal = (sq1.minX() + sq1.maxX()) / 2
             yVal = (sq1.minY() + sq1.maxY()) / 2
             coord1 = [xVal, yVal]
         
-        if newPos != '__':
+        if newPos == '__':
+            coord2 = '[Graveyard]'
+        else:
             sq2 = self.board[newPos[1]][newPos[0]]
             xVal = (sq2.minX() + sq2.maxX()) / 2
             yVal = (sq2.minY() + sq2.maxY()) / 2

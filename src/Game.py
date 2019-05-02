@@ -115,7 +115,7 @@ def makeMoveReadable(move, board, aiMove, chessGUI=None,
         useArm = False
         if physOutput:
             useArm = True
-            physOutput.movePieces(move)
+            physOutput.processMove(move)
         display("AI : " + str(move), chessGUI, aiMove=True,
                 useCam=useCam, useArm=useArm)
     board.makeMove(move)
