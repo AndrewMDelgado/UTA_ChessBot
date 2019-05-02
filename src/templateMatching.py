@@ -48,7 +48,7 @@ class Match:
         lenY = bBotR[1] - bTopL[1]
         board = []
 
-        fileList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+        fileList = ['H', 'G', 'F', 'E', 'D', 'C', 'B', 'A']
         for idx_r in range(8):
             row = []
             r = str(8 - idx_r)
