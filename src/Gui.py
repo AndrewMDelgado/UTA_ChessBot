@@ -39,9 +39,7 @@ class GUI:
             output = open(filename, "w")
             pos1 = e1.get()
             pos2 = e2.get()
-            pos1.upper()
-            pos2.upper()
-            output.write('1 ' + pos1 + ' ' + pos2)
+            output.write('1 ' + pos1.upper() + ' ' + pos2.upper())
             winPrompt.destroy()
             return
 

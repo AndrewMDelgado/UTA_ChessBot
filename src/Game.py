@@ -82,20 +82,20 @@ def undoLastTwoMoves(board):
         board.undoLastMove()
 
 def specialCommands(cmd, board, parser):
-    if command.lower() == 'u':
+    if cmd.lower() == 'u':
         undoLastTwoMoves(board)
-    elif command.lower() == '?':
+    elif cmd.lower() == '?':
         printCommandOptions()
-    elif command.lower() == 'l':
+    elif cmd.lower() == 'l':
         printAllLegalMoves(board, parser)
-    elif command.lower() == 'r':
+    elif cmd.lower() == 'r':
         move = getRandomMove(board, parser)
         return False
-    elif command.lower() == 'p':
+    elif cmd.lower() == 'p':
         print()
         print(board)
         print()
-    elif command.lower() == 's' or command.lower() == 'save':
+    elif cmd.lower() == 's' or cmd.lower() == 'save':
         saveGame(board)
     return True
 
@@ -133,6 +133,11 @@ def minUIGame(board, playerSide, ai, useCamera, useMecArm):
     physInputBlack = PhysInput(BLACK)
     physInput = physInputWhite
 
+    colDict = {
+        WHITE: [parserWhite, physInputWhite, 'Wh'],
+        BLACK: [parserBlack, physInputBlack, 'Bl']
+    }
+
     physOutput = None
     if useMecArm:
         physOutput = PhysOutput(not playerSide)
@@ -166,7 +171,7 @@ def minUIGame(board, playerSide, ai, useCamera, useMecArm):
             return
 
         if PvP or board.currentSide == playerSide:
-            # printPointAdvantage(board)
+            '''
             if board.currentSide == WHITE:
                 parser = parserWhite
                 physInput = physInputWhite
@@ -175,6 +180,8 @@ def minUIGame(board, playerSide, ai, useCamera, useMecArm):
                 parser = parserBlack
                 physInput = physInputBlack
                 plRep = 'Bl'
+            '''
+            parser, physInput, plRep = colDict[board.currentSide]
             if not PvP:
                 plRep = 'Pl'
 

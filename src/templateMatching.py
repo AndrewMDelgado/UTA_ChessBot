@@ -51,14 +51,15 @@ class Match:
         fileList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
         for idx_r in range(8):
             row = []
-            r = str(idx_r + 1)
+            r = str(8 - idx_r)
             minY = bTopL[1] + (idx_r * lenY)
             for idx_f, f in enumerate(fileList):
                 minX = bTopL[0] + (idx_f * lenX)
                 sqTopL = [minX, minY]
                 sqBotR = [minX + lenX, minY + lenY]
                 row.append(self.Square(sqTopL, sqBotR, r, f))
-            board.append(row)
+            #board.append(row)
+            board = [row] + board
 
         return board
     

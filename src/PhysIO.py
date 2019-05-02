@@ -302,54 +302,59 @@ class PhysOutput:
     
     def __init__(self, aiColor):
         self.aiColor = aiColor
+        self.board = Match().board
+        self.heights = {
+            'K':0,
+            'Q':0,
+            'B':0,
+            'N':0,
+            'R':0,
+            'P':0
+        }
+
+    def movePiece(self, piece, oldPos, newPos):
+        sq1 = None
+        sq2 = None
+        coord1 = []
+        coord2 = []
+        
+        if oldPos != '__':
+            sq1 = self.board[oldPos[1]][oldPos[0]]
+            xVal = (sq1.minX + sq1.maxX) / 2
+            yVal = (sq1.minY + sq1.maxY) / 2
+            coord1 = [xVal, yVal]
+        
+        if newPos != '__':
+            sq2 = self.board[newPos[1]][newPos[0]]
+            xVal = (sq2.minX + sq2.maxX) / 2
+            yVal = (sq2.minY + sq2.maxY) / 2
+            coord2 = [xVal, yVal]
+        
+        height = self.heights[piece.stringRep]
+        #move piece from coord1 to coord2 according to height
+        print(str(coord1) + ' to ' + str(coord2) + ' (height ' + height + ')')
+
+        
 
     def processMove(self, move):
         print('Moving piece: ' + str(move))
-        if move.pieceToCapture:
-            # take move.pieceToCapture
-            # move piece
-            pass
-        elif move.kingsideCastle or move.queensideCastle:
-            # move king
-            # move move.specialMovePiece
-            pass
+        if move.kingsideCastle or move.queensideCastle:
+            rook = move.specialMovePiece
+            yVal = move.oldPos[1]
+            xVal = 5 if move.kingsideCastle else 2
+            self.movePiece(move.piece, move.oldPos, move.newPos)
+            self.movePiece(rook, rook.position, [xVal, yVal])
         elif move.passant:
-            # move piece
-            # take move.specialMovePiece
-            pass
+            enmPawn = move.specialMovePiece
+            self.movePiece(move.piece, move.oldPos, move.newPos)
+            self.movePiece(enmPawn, enmPawn.position, '__')
         elif move.promotion:
-            # take piece
-            # make move.specialMovePiece(?)
-            pass
+            self.movePiece(move.piece, move.oldPos, '__')
+            # make move.specialMovePiece(?) or just prompt player to put piece down
+        elif move.pieceToCapture:
+            taken = move.pieceToCapture
+            self.movePiece(taken, taken.position, '__')
+            self.movePiece(move.piece, move.oldPos, move.newPos)
         else:
-            # move piece
-            pass
+            self.movePiece(move.piece, move.oldPos, move.newPos)
 
-
-
-class VirtualBoard:
-    class VirtualPiece:
-        def __init__(self, color, x, y):
-            self.color = color
-            self.x = x
-            self.y = y
-
-    fileStr = 'ABCDEFGH'
-    def __init__(self):
-        self.grid = [
-            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
-            ['p', 'p', 'P', 'P', 'P', 'P', 'P', 'P'],
-            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
-    
-    def __str__(self):
-        gridStr = ''
-        for rank in reversed(self.grid):
-            for space in rank:
-                gridStr += space
-            gridStr += '\r\n'
-        return gridStr
