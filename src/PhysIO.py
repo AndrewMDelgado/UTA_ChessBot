@@ -304,14 +304,15 @@ class PhysOutput:
         self.aiColor = aiColor
         self.board = Match().board
         self.heights = {
-            'K':0,
-            'Q':1,
-            'B':2,
-            'N':4,
-            'R':6,
-            'P':8
+            'K':6.8,
+            'Q':7.0,
+            'B':5.2,
+            'N':4.9,
+            'R':5.2,
+            'P':3.0
         }
 
+    '''
     def movePiece(self, piece, oldPos, newPos):
         sq1 = None
         sq2 = None
@@ -337,28 +338,37 @@ class PhysOutput:
         height = self.heights[piece.stringRep]
         #move piece from coord1 to coord2 according to height
         print(str(coord1) + ' to ' + str(coord2) + ' (height ' + str(height) + ')')
+    '''
 
-        
+    def exportMove(self, piece, oldPos, newPos):
+        sq1 = '[Reserves]' if oldPos == '__' else self.board[oldPos[1]][7-oldPos[0]]
+        sq2 = '[Graveyard]' if newPos == '__' else self.board[newPos[1]][7-newPos[0]]
+        height = self.heights[piece.stringRep]
+        #export sq1, sq2, height to arm
+        print('Export to arm: ' + piece.stringRep + ', ' + str(height) + ' cm: ' + str(sq1) + ' to ' + str(sq2))
 
     def processMove(self, move):
-        print('Moving piece: ' + str(move))
+        #print('Moving piece: ' + str(move))
         if move.kingsideCastle or move.queensideCastle:
             rook = move.specialMovePiece
             yVal = move.oldPos[1]
             xVal = 5 if move.kingsideCastle else 2
-            self.movePiece(move.piece, move.oldPos, move.newPos)
-            self.movePiece(rook, rook.position, [xVal, yVal])
+            self.exportMove(move.piece, move.oldPos, move.newPos)
+            self.exportMove(rook, rook.position, [yVal, xVal])
         elif move.passant:
             enmPawn = move.specialMovePiece
-            self.movePiece(move.piece, move.oldPos, move.newPos)
-            self.movePiece(enmPawn, enmPawn.position, '__')
+            self.exportMove(move.piece, move.oldPos, move.newPos)
+            self.exportMove(enmPawn, enmPawn.position, '__')
         elif move.promotion:
-            self.movePiece(move.piece, move.oldPos, '__')
-            # make move.specialMovePiece(?) or just prompt player to put piece down
+            enmPiece = move.pieceToCapture
+            if enmPiece:
+                self.exportMove(enmPiece, enmPiece.position, '__')
+            self.exportMove(move.piece, move.oldPos, '__')
+            self.exportMove(move.specialMovePiece, '__', move.newPos)
         elif move.pieceToCapture:
             taken = move.pieceToCapture
-            self.movePiece(taken, taken.position, '__')
-            self.movePiece(move.piece, move.oldPos, move.newPos)
+            self.exportMove(taken, taken.position, '__')
+            self.exportMove(move.piece, move.oldPos, move.newPos)
         else:
-            self.movePiece(move.piece, move.oldPos, move.newPos)
+            self.exportMove(move.piece, move.oldPos, move.newPos)
 
